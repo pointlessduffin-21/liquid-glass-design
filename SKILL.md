@@ -25,15 +25,18 @@ static folder and build on them.
 | `liquid-glass-overlay.css` | The same tokens for panels **over a live WebGL/canvas scene**: no `backdrop-filter`, faked glass, collapsible blocks, read-outs, pills, keys, embed mode |
 | `liquid-glass.js` | Sidebar collapse (remembered), server status dot from a health URL, 401 → sign-in redirect. No dependencies |
 | `liquid-glass-buttons.js` | Opt-in `.btn-glass` hold/drag surface feedback; movement over 8 px cancels activation, reduced-motion support |
+| `liquid-glass-theme.js` | Custom background/accent colors with derived tints and primary-label contrast |
+| `liquid-glass-motion.js` | Interruptible pop/fade/slide show/hide APIs and responsive glass navigation |
+| `demo-system.html` | Theme, glass menu, animation, and mobile playground |
 | `demo-buttons.html` | Standalone clear/tinted button playground |
 | `template-app.html` | A complete app page in the correct structure |
 | `template-login.html` | Sign-in page with the client slot |
 | `jinja/base.html` | The production Flask/Jinja shell: role-filtered grouped nav, account chip, default-password banner |
 
 In React, Vue or Svelte, import `liquid-glass.css` once at the root and use the
-class names. Don't fork the tokens into a JS theme object.
+class names. Use `LiquidGlass.setTheme` for customization; keep CSS tokens as the shared source of truth.
 
-## Tokens (never invent colours)
+## Tokens (defaults; customize deliberately)
 
 | Token | Value | Role |
 | --- | --- | --- |
@@ -41,11 +44,11 @@ class names. Don't fork the tokens into a JS theme object.
 | `--brand-deep` `--brand-green` `--brand-mid` `--brand-lime` | `#0f4f34` `#1a6f3a` `#5fae52` `#a8cc4a` | Default brand palette: primary button, active nav, avatar |
 | `--accent` | `#127942` | Links, focus ring, selection, "Actual" |
 | `--ok` `--warn` `--err` `--info` | `#1aa34a` `#c98a12` `#d2453c` `#2f6fb3` | **Status only**, always with a word |
-| `--bg` + field | `#eef3ee` + four soft radial greens, fixed | The ground the glass refracts. Never flatten it |
+| `--bg` + field | `#eef3ee` + four soft radial greens, fixed | Default background field; customize or disable it |
 | Glass | white 74→54% gradient, `blur(22px) saturate(170%)`, 1px white edge, inset top highlight, soft green shadow | Every surface |
 
 Radii are 18 px (cards), 14 (tiles, inputs), 10 (controls) and 999 (buttons,
-badges). Easing is `cubic-bezier(.2,.7,.2,1)`. Light only.
+badges). Easing is `cubic-bezier(.2,.7,.2,1)`. Surfaces are light; backgrounds and accents are customizable.
 
 ## Type
 
@@ -75,7 +78,7 @@ badges). Easing is `cubic-bezier(.2,.7,.2,1)`. Light only.
 6. **Every list and chart has an `.empty` state** that names the next step.
 7. **Roles shape the UI:** viewers see everything and no edit affordances.
    Below admin, configuration inputs are disabled rather than hidden.
-8. **No glows, no emoji icons, no dark mode.** Icons are inline Feather SVGs,
+8. **Keep decorative effects restrained and use SVG icons.** Icons are inline Feather SVGs,
    18 px, `stroke` set to `currentColor`.
 
 ## Over a 3D scene
@@ -90,6 +93,14 @@ When the scene is embedded in an app page:
 - give the frame a toolbar (full screen, new tab, reload);
 - show an honest empty state if the scene isn't served.
 
+## Customization and motion
+
+Use `references/themes-and-motion.md` when adding custom backgrounds/accents,
+glass menu bars, entrances/exits, or mobile navigation. Animate wrappers using
+transform/opacity; reserve blur for small static material layers. Target 60 fps
+and profile on representative devices, with `.glass-lite` and `.glass-opaque`
+fallbacks. Honor reduced motion and preserve keyboard focus on exit.
+
 ## Read next
 
 - `references/components.md`: every class, token and how to use it.
@@ -99,6 +110,7 @@ When the scene is embedded in an app page:
 - `references/charts.md`: the validated series palette and Chart.js defaults.
 - `references/cobranding.md`: the client slot, fetching client logos safely,
   and what not to do with them.
+- `references/themes-and-motion.md`: implemented theme API, navigation markup, motion lifecycle, and optimization guidance.
 - `references/dynamic-island-plan.md`: planned activity island and fluid motion integration; these components are not implemented yet.
 - `references/checklist.md`: the pre-ship checks (390 px, roles, MJPEG
   limits, proxy headers), each from a real defect.

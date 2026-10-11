@@ -1,7 +1,8 @@
 # Dynamic Island and Liquid Glass motion integration plan
 
 Status: island integration proposed. Interactive button motion now ships in
-`kit/liquid-glass-buttons.js` and `.btn-glass` styles; no island runtime ships yet.
+`kit/liquid-glass-buttons.js` and `.btn-glass` styles; the reusable theme and pop/fade/slide APIs now ship in
+`liquid-glass-theme.js` and `liquid-glass-motion.js`. No island runtime ships yet.
 
 ## Intended experience
 
@@ -19,7 +20,8 @@ and [Live Activities](https://developer.apple.com/design/human-interface-guideli
 
 ## Stage 1 — Material and motion foundations
 
-Add opt-in `kit/liquid-glass-motion.css` and `kit/liquid-glass-motion.js`.
+Extend the shipped `kit/liquid-glass-motion.js` and shared CSS motion tokens
+for island-specific transitions rather than duplicating the existing motion API.
 Introduce scoped tokens for short feedback (120–180 ms), content transitions
 (180–260 ms), and island expansion (300–420 ms). These are initial design targets,
 to tune in the demo. Define one restrained spring-like expansion curve, a

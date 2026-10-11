@@ -168,3 +168,10 @@ normally. Vertical touch scrolling is preserved. `.glass-opaque` on a parent
 disables transparency. Reduced motion removes elastic movement. Avoid nesting
 interactive glass buttons on blurred glass surfaces; use ordinary buttons there.
 See `kit/demo-buttons.html` for a standalone example.
+
+## Theme, navigation, and motion components
+
+See `references/themes-and-motion.md` for custom colors/backgrounds,
+`.glass-menubar` navigation, and interruptible `LiquidGlass.show` / `hide`
+transitions. Use `.glass-lite` or `.glass-opaque` on a containing element
+for lower-cost or opaque material rendering.

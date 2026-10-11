@@ -28,6 +28,14 @@
     --brand-mid: #5fae52;
     --brand-lime: #a8cc4a;
     --accent: #127942;
+    --accent-tint: var(--brand-green);
+    --on-accent: #fff;
+    --field-a: rgba(168, 204, 74, .30);
+    --field-b: rgba(95, 174, 82, .22);
+    --field-c: rgba(18, 121, 66, .16);
+    --background-field: radial-gradient(1100px 700px at -10% -10%, var(--field-a), transparent 60%), radial-gradient(900px 640px at 110% 0%, var(--field-b), transparent 62%), radial-gradient(1000px 800px at 60% 120%, var(--field-c), transparent 60%), radial-gradient(700px 500px at 30% 60%, rgba(255,255,255,.55), transparent 70%);
+    --background-image: var(--background-field);
+    --motion-duration: 240ms;
     --accent-soft: rgba(18, 121, 66, .10);
     --accent-line: rgba(18, 121, 66, .28);
 
@@ -90,11 +98,7 @@ body {
     background-color: var(--bg);
     /* The field the glass refracts: soft brand-green light, fixed so panels
        slide over it rather than carrying it with them. */
-    background-image:
-        radial-gradient(1100px 700px at -10% -10%, rgba(168, 204, 74, .30), transparent 60%),
-        radial-gradient(900px 640px at 110% 0%, rgba(95, 174, 82, .22), transparent 62%),
-        radial-gradient(1000px 800px at 60% 120%, rgba(18, 121, 66, .16), transparent 60%),
-        radial-gradient(700px 500px at 30% 60%, rgba(255, 255, 255, .55), transparent 70%);
+    background-image: var(--background-image);
     background-attachment: fixed;
     min-height: 100vh;
     -webkit-font-smoothing: antialiased;
@@ -107,7 +111,7 @@ a { color: var(--accent); }
 [hidden] { display: none !important; }
 img, svg { display: block; }
 
-::selection { background: rgba(168, 204, 74, .45); }
+::selection { background: var(--accent-line); }
 
 :focus-visible {
     outline: 2px solid var(--accent);
@@ -257,7 +261,7 @@ img, svg { display: block; }
     width: 32px; height: 32px; border-radius: 50%;
     display: grid; place-items: center;
     background: linear-gradient(135deg, var(--brand-lime), var(--brand-green));
-    color: #fff; font-size: 12.5px; font-weight: 700;
+    color: var(--on-accent); font-size: 12.5px; font-weight: 700;
     box-shadow: inset 0 1px 0 rgba(255, 255, 255, .5);
 }
 .sb-user-text { min-width: 0; flex: 1; line-height: 1.25; }
@@ -431,12 +435,12 @@ body.fit-viewport .app-main > .container {
 .btn .ic { width: 15px; height: 15px; }
 
 .btn-primary {
-    color: #fff;
-    border-color: rgba(15, 79, 52, .6);
-    background: linear-gradient(180deg, #1f8a4c, var(--brand-green));
-    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 2px 8px rgba(18, 121, 66, .28);
+    color: var(--on-accent);
+    border-color: var(--brand-deep);
+    background: linear-gradient(180deg, var(--accent-tint), var(--brand-green));
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, .28), 0 2px 8px var(--accent-line);
 }
-.btn-primary:hover { border-color: var(--brand-deep); background: linear-gradient(180deg, #22955a, #176537); }
+.btn-primary:hover { border-color: var(--brand-deep); background: linear-gradient(180deg, var(--brand-green), var(--accent-tint)); }
 
 .btn-danger { color: var(--err); }
 .btn-danger:hover { border-color: rgba(210, 69, 60, .45); background: #fff5f4; }
@@ -473,7 +477,7 @@ body.fit-viewport .app-main > .container {
     outline: none;
     border-color: var(--accent);
     background: #fff;
-    box-shadow: 0 0 0 4px rgba(18, 121, 66, .14);
+    box-shadow: 0 0 0 4px var(--accent-soft);
 }
 .textarea, .field textarea { min-height: 90px; resize: vertical; }
 .input:disabled, .select:disabled, .textarea:disabled,
@@ -531,8 +535,9 @@ body.fit-viewport .app-main > .container {
 .dot-ok { background: var(--ok); }
 .dot-warn { background: var(--warn); }
 .dot-err { background: var(--err); }
-.dot-live { background: var(--ok); animation: pulse 2s var(--ease) infinite; }
-@keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 rgba(26, 163, 74, .45); } 60% { box-shadow: 0 0 0 6px rgba(26, 163, 74, 0); } }
+.dot-live { position: relative; background: var(--ok); }
+.dot-live::after { content: ""; position: absolute; inset: -3px; border-radius: inherit; border: 2px solid var(--ok); pointer-events: none; animation: pulse 2s var(--ease) infinite; }
+@keyframes pulse { 0% { transform: scale(.6); opacity: .6; } 70%, 100% { transform: scale(1.6); opacity: 0; } }
 
 .chip {
     display: inline-flex; align-items: center; gap: 6px;
@@ -610,10 +615,10 @@ body .modal-overlay {
 .skeleton {
     border-radius: var(--r-sm);
     background: linear-gradient(90deg, rgba(16, 36, 26, .05), rgba(16, 36, 26, .09), rgba(16, 36, 26, .05));
-    background-size: 200% 100%;
-    animation: shimmer 1.4s linear infinite;
+    position: relative; overflow: hidden;
 }
-@keyframes shimmer { to { background-position: -200% 0; } }
+.skeleton::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,.65), transparent); transform: translateX(-100%); animation: shimmer 1.4s linear infinite; }
+@keyframes shimmer { to { transform: translateX(100%); } }
 
 /* ── status label (sidebar) ────────────────────────────────────────────── */
 
@@ -747,7 +752,8 @@ body .modal-overlay {
 .btn-glass.glass-held::after, .btn-glass:active::after { opacity: .85; }
 .btn-glass:focus-visible { outline: 3px solid var(--accent); outline-offset: 5px; }
 .btn-glass.btn-primary::before {
-    background: linear-gradient(155deg, rgba(31,138,76,.88), rgba(26,111,58,.9));
+    background: var(--accent-tint);
+    background: linear-gradient(155deg, var(--accent-tint), color-mix(in srgb, var(--accent-tint) 88%, transparent));
     border-color: rgba(255,255,255,.55);
 }
 .btn-glass.btn-primary::after { opacity: .12; }
@@ -773,3 +779,47 @@ body .modal-overlay {
     .btn-glass { border: 1px solid ButtonText; color: ButtonText; background: ButtonFace; }
     .btn-glass::before, .btn-glass::after { display: none; }
 }
+
+/* Glass menu bars: use ordinary links/buttons inside one glass layer. */
+.glass-menubar {
+    position: sticky; top: max(12px, env(safe-area-inset-top)); z-index: 110;
+    display: flex; align-items: center; gap: 16px; padding: 10px 14px;
+    margin: 12px; border-radius: 24px; background: var(--glass-strong);
+    border: 1px solid var(--glass-edge); box-shadow: var(--shadow);
+    backdrop-filter: blur(12px) saturate(150%); -webkit-backdrop-filter: blur(12px) saturate(150%);
+}
+.glass-menubar-brand { font-weight: 700; color: var(--ink); text-decoration: none; white-space: nowrap; }
+.glass-menu-links { display: flex; align-items: center; gap: 6px; flex: 1; }
+.glass-menu-links a { display: flex; align-items: center; min-height: 44px; padding: 8px 16px; color: var(--ink-2); text-decoration: none; border-radius: 999px; }
+.glass-menu-links a:hover, .glass-menu-links a[aria-current="page"] { background: var(--accent-soft); color: var(--accent); }
+.glass-menu-toggle { display: none; margin-left: auto; }
+/* Explicit quality controls: no animated blur and no nested glass layers. */
+.glass-opaque, .glass-lite { --glass-blur: none; }
+.glass-opaque :is(.glass, .card, .kpi, #app-sidebar, .modal, .toast, .auth-card, .glass-menubar) { background: #fbfdfb; backdrop-filter: none; -webkit-backdrop-filter: none; }
+.glass-lite .glass-menubar, .glass-lite .btn-glass::before { backdrop-filter: none; -webkit-backdrop-filter: none; }
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+    .glass-menubar { background: #fbfdfb; }
+}
+@media (prefers-reduced-transparency: reduce) {
+    .glass-menubar { background: #fbfdfb; backdrop-filter: none; -webkit-backdrop-filter: none; }
+}
+@media (max-width: 760px) {
+    body { background-attachment: scroll; min-height: 100svh; }
+    .glass-menubar { flex-wrap: wrap; margin: 8px; gap: 8px; top: max(8px, env(safe-area-inset-top)); }
+    .glass-menu-toggle { display: inline-flex; }
+    .glass-menu-links { flex-basis: 100%; flex-direction: column; align-items: stretch; }
+    .glass-menu-links a { border-radius: 12px; }
+    .page-head, .page-actions { flex-wrap: wrap; min-width: 0; }
+    .page-actions { width: 100%; }
+    .page-actions > * { max-width: 100%; }
+    .toast { max-width: calc(100vw - 32px); }
+    .modal { max-height: calc(100svh - 32px); overflow: auto; }
+}
+@media (forced-colors: active) {
+    .glass-menubar { background: Canvas; border-color: CanvasText; }
+    .glass-menu-links a { color: LinkText; }
+}
+
+.glass-theme { background-color: var(--bg); background-image: var(--background-image); }
+
+.glass-lite .skeleton::after, .glass-lite .dot-live::after { animation: none; }

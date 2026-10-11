@@ -75,4 +75,42 @@ Open [the button playground](kit/demo-buttons.html) directly in a browser, or se
 this folder with `python3 -m http.server 8000` and visit
 `http://localhost:8000/kit/demo-buttons.html`.
 
-The current kit provides frosted glass styling and interactive button motion. Dynamic Island components and the expanded animation system below are **planned**, not implemented. Web effects will be inspired by Apple's material and motion principles; native Apple Liquid Glass APIs are not available as CSS features.
+The kit includes glass buttons, configurable colors, glass menu bars, and pop/fade/slide transitions. Dynamic Island components are **planned**, not implemented. Web effects will be inspired by Apple's material and motion principles; native Apple Liquid Glass APIs are not available as CSS features.
+
+## Backgrounds, accents, menus, and motion
+
+Load `liquid-glass-theme.js` and `liquid-glass-motion.js` with `defer`.
+
+```js
+LiquidGlass.setTheme({ accent: '#6366f1', background: '#eef0ff', field: true });
+await LiquidGlass.show(panel, { effect: 'pop' });
+await LiquidGlass.hide(panel, { effect: 'fade', focusTarget: trigger });
+```
+
+Choose `pop`, `fade`, or `slide` for entrances and exits. Backgrounds also accept
+custom gradients/images through the CSS `--background-image` token. Glass menu
+bars use `.glass-menubar` and collapse into a mobile disclosure navigation.
+See [the full API and markup guide](references/themes-and-motion.md) and open
+[the theme and motion playground](kit/demo-system.html).
+
+Animations prioritize transform and opacity, clean up resources, and honor
+reduced motion. Use `.glass-lite` for lower rendering cost or `.glass-opaque`
+for opaque surfaces. The kit targets 60 fps; actual frame rate depends on the
+device, composited content, and concurrent rendering work.
+
+## Browser verification
+
+The kit has no runtime npm dependencies. To run development checks:
+
+```sh
+npm ci
+npx playwright install chromium firefox webkit
+npm run test:browser
+BROWSER=firefox npm run test:browser
+BROWSER=webkit npm run test:browser
+```
+
+For an installed Google Chrome, use `CHROME_CHANNEL=chrome npm run test:browser`.
+Checks cover themes, interrupted animations, focus, reduced motion, menu
+behavior, mobile overflow, and button regression. Screenshots go to the ignored
+`artifacts/` directory.

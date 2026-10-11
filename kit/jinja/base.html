@@ -80,6 +80,8 @@
     <script src="{{ url_for('static', filename='liquid-glass.js') }}" defer></script>
     {% block styles %}{% endblock %}
     <script src="{{ url_for('static', filename='liquid-glass-buttons.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='liquid-glass-theme.js') }}" defer></script>
+    <script src="{{ url_for('static', filename='liquid-glass-motion.js') }}" defer></script>
 </head>
 <body class="{% block body_class %}{% endblock %}" data-health-url="/healthz" data-login-url="/login">
     <a class="skip-link" href="#main">Skip to content</a>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Liquid Glass · Theme and motion playground</title>
+  <link rel="stylesheet" href="liquid-glass.css">
+  <script src="liquid-glass-theme.js" defer></script>
+  <script src="liquid-glass-motion.js" defer></script>
+  <script src="liquid-glass-buttons.js" defer></script>
+  <script src="demo-system.js" defer></script>
+  <style>
+    main { max-width: 1080px; margin: 64px auto; padding: 0 24px 48px; }
+    h1 { font-size: clamp(30px, 6vw, 54px); letter-spacing: -.04em; margin: 8px 0 12px; }
+    .intro { color: var(--ink-2); max-width: 600px; margin-bottom: 28px; }
+    .demo-layout { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 24px; }
+    .controls { display: grid; gap: 16px; }
+    .settings-row { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    .settings-row input[type=color] { width: 64px; height: 44px; padding: 4px; border-radius: 10px; }
+    .stage { min-height: 300px; display: grid; place-items: center; padding: 24px; border-radius: 24px; background: var(--accent-soft); overflow: hidden; }
+    .sample { width: min(100%, 280px); padding: 28px; border-radius: 20px; background: var(--glass-strong); border: 1px solid var(--glass-edge); box-shadow: var(--shadow); }
+    .sample h2 { margin-bottom: 8px; }
+    .sample p { color: var(--ink-2); }
+    .actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .theme-summary { margin: 20px 0 0; color: var(--ink-2); min-height: 24px; }
+    @media(max-width:760px) { main { margin: 32px auto; padding: 0 16px 32px; } .demo-layout { grid-template-columns: minmax(0,1fr); } }
+  </style>
+</head>
+<body>
+  <header class="glass-menubar">
+    <a class="glass-menubar-brand" href="#home">Liquid Glass</a>
+    <button class="btn glass-menu-toggle" type="button" data-glass-menu="demo-navigation" aria-controls="demo-navigation" aria-expanded="false">Menu</button>
+    <nav class="glass-menu-links" id="demo-navigation" aria-label="Main">
+      <a href="#home" aria-current="page">Overview</a>
+      <a href="#customize">Customize</a>
+      <a href="#motion">Motion</a>
+    </nav>
+  </header>
+  <main id="home">
+    <div class="card" style="padding:24px; margin-bottom:24px">
+      <div class="eyebrow">Your colors. Fluid motion.</div>
+      <h1>A little more liquid.</h1>
+      <p class="intro">Change the atmosphere, tint your controls, and try pop, fade, and slide transitions. Open the menu on a phone. The same kit responds to touch, keyboard, and reduced motion.</p>
+    </div>
+    <div class="demo-layout">
+      <section class="card" style="padding:24px" id="customize" aria-labelledby="settings-title">
+        <h2 class="card-title" id="settings-title" style="margin-bottom:20px">Material settings</h2>
+        <div class="controls">
+          <label class="settings-row">Accent <input id="accent" type="color" value="#127942"></label>
+          <label class="settings-row">Background <input id="background" type="color" value="#eef3ee"></label>
+          <label><input id="field" type="checkbox" checked> Soft background field</label>
+          <label><input id="opaque" type="checkbox"> Opaque surfaces</label>
+          <label><input id="lite" type="checkbox"> Low-cost rendering (no blur)</label>
+          <div class="field"><label for="effect">Transition</label><select id="effect"><option value="pop">Pop in / out</option><option value="fade">Fade in / out</option><option value="slide">Slide in / out</option></select></div>
+        </div>
+        <p class="theme-summary" id="theme-status" role="status">Default green theme</p>
+      </section>
+      <section class="card" style="padding:24px" id="motion" aria-labelledby="motion-title">
+        <h2 class="card-title" id="motion-title" style="margin-bottom:20px">Motion playground</h2>
+        <div class="stage"><article id="sample" class="sample"><div class="eyebrow">Ready when you are</div><h2>Welcome back.</h2><p>One surface, a soft entrance, and a clean exit.</p></article></div>
+        <div class="actions">
+          <button class="btn btn-primary" id="show" type="button">Show</button>
+          <button class="btn" id="hide" type="button">Hide</button>
+          <button class="btn" id="replay" type="button">Replay</button>
+        </div>
+        <p class="theme-summary" id="motion-status" role="status">Try a transition.</p>
+      </section>
+    </div>
+  </main>
+</body>
+</html>
