@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<!--
+  liquid-glass-design — app page starter.
+
+  A complete page in the right structure: skip link, glass sidebar with grouped
+  navigation, account chip and client slot; page head; KPI row; toolbar;
+  table in a card; empty state; a native <dialog>. Replace the content, keep
+  the structure. Paths assume kit/ is served at /static/.
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#eef3ee">
+  <title>Overview · Product name</title>
+  <link rel="stylesheet" href="/static/liquid-glass.css">
+  <script src="/static/liquid-glass.js" defer></script>
+  <style>
+    /* Page-specific layout only. Components come from liquid-glass.css. */
+  </style>
+  <script src="/static/liquid-glass-buttons.js" defer></script>
+</head>
+<body data-health-url="/healthz" data-login-url="/login">
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <aside id="app-sidebar" aria-label="Main">
+    <div class="sb-brand">
+      <a href="/" class="sb-logo" aria-label="Product name — home">
+        <span class="sb-product">Product name</span>
+      </a>
+      <a href="/" class="sb-mark-only" aria-label="Home">
+        <span aria-hidden="true">LG</span>
+      </a>
+      <button class="sb-collapse" id="sb-collapse" type="button" aria-label="Collapse sidebar" aria-expanded="true">
+        <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-group">
+        <div class="sb-group-label">Overview</div>
+        <a href="/" class="sb-item active" aria-current="page" title="Live monitor">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          <span class="sb-label">Live monitor</span>
+        </a>
+        <a href="/reports" class="sb-item" title="Reports">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span class="sb-label">Reports</span>
+        </a>
+      </div>
+      <div class="sb-group">
+        <div class="sb-group-label">System</div>
+        <a href="/admin/users" class="sb-item" title="Users &amp; access">
+          <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span class="sb-label">Users &amp; access</span>
+        </a>
+      </div>
+    </nav>
+
+    <div class="sb-foot">
+      <div class="sb-status" role="status">
+        <span id="connection-dot" class="dot-off"></span>
+        <span class="sb-label" id="status-badge">Offline</span>
+      </div>
+      <div class="sb-user">
+        <span class="avatar" aria-hidden="true">A</span>
+        <div class="sb-user-text">
+          <div class="sb-user-name">Administrator</div>
+          <div class="sb-user-role">Admin</div>
+        </div>
+        <div class="sb-user-actions">
+          <a href="/account" title="Account" aria-label="Account">
+            <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>
+          </a>
+          <form method="post" action="/logout">
+            <button type="submit" title="Sign out" aria-label="Sign out">
+              <svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </form>
+        </div>
+      </div>
+      <!-- Client slot: only for a client deliverable. See references/cobranding.md. -->
+      <div class="sb-client" title="Proof of concept for Client name">
+        <span>Proof of concept for</span>
+        <img src="/static/brand/client-logo.svg" alt="Client name">
+      </div>
+    </div>
+  </aside>
+
+  <main class="app-main" id="main">
+    <div class="container">
+      <header class="page-head">
+        <div>
+          <div class="eyebrow">Overview</div>
+          <h1>Live monitor</h1>
+          <p class="page-sub">One sentence: what this page is for and who uses it.</p>
+        </div>
+        <div class="page-actions">
+          <select class="select" aria-label="Station" style="width:auto">
+            <option>All stations</option>
+          </select>
+          <button class="btn btn-glass" type="button">Refresh</button>
+          <button class="btn btn-glass btn-primary" type="button" id="open-dialog">New item</button>
+        </div>
+      </header>
+
+      <div class="stack">
+        <section class="kpi-grid" aria-label="Summary">
+          <div class="kpi"><div class="kpi-label">Active cameras</div><div class="kpi-value">6</div><div class="kpi-note">Streaming now</div></div>
+          <div class="kpi"><div class="kpi-label">Cycles completed</div><div class="kpi-value">25,635</div><div class="kpi-note">Total recorded</div></div>
+          <div class="kpi"><div class="kpi-label">Average cycle</div><div class="kpi-value">47.0<small>s</small></div><div class="kpi-note">Across all cycles</div></div>
+          <div class="kpi kpi-bad"><div class="kpi-label">Open anomalies</div><div class="kpi-value">2</div><div class="kpi-note">Need review</div></div>
+        </section>
+
+        <section class="card card-pad-0" aria-labelledby="recent-title">
+          <div class="card-head" style="padding:16px 18px 0">
+            <h2 class="card-title" id="recent-title">Recent cycles</h2>
+            <div class="row">
+              <span class="badge badge-sim">Simulated</span>
+              <span class="badge badge-accent">Actual</span>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>#</th><th>Station</th><th class="num">Cycle time</th><th>Status</th><th>Started</th></tr></thead>
+              <tbody>
+                <tr><td>255</td><td>ST-05</td><td class="num">40.7 s</td><td><span class="badge badge-ok"><span class="dot dot-ok"></span>Normal</span></td><td>5:59 PM</td></tr>
+                <tr><td>254</td><td>ST-05</td><td class="num">61.2 s</td><td><span class="badge badge-warn"><span class="dot dot-warn"></span>Struggled</span></td><td>5:59 PM</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="card">
+          <div class="empty"><strong>No anomalies</strong>Nothing matches these filters. New ones appear here as they are raised.</div>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <dialog class="modal" id="item-dialog" aria-labelledby="dlg-title"
+          style="width:min(460px, calc(100vw - 32px)); padding:22px">
+    <form method="dialog">
+      <h2 class="card-title" id="dlg-title" style="font-size:17px;margin-bottom:14px">New item</h2>
+      <div class="field"><label for="f-name">Name</label><input id="f-name" autocomplete="off"></div>
+      <div class="field"><label for="f-role">Role</label>
+        <select id="f-role"><option>Viewer</option><option>Supervisor</option><option>Admin</option></select></div>
+      <div class="row" style="justify-content:flex-end;margin-top:20px">
+        <button class="btn btn-glass" value="cancel">Cancel</button>
+        <button class="btn btn-glass btn-primary" value="save">Save</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="/static/template-app-demo.js" defer></script>
+</body>
+</html>

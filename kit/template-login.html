@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!--
+  liquid-glass-design — sign-in page. Standalone (no sidebar).
+  The form posts username, password and next; the server validates next as a
+  same-site relative path. Show errors in .auth-error with role="alert".
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#eef3ee">
+  <title>Sign in · Product name</title>
+  <link rel="stylesheet" href="/static/liquid-glass.css">
+  <script src="/static/liquid-glass-buttons.js" defer></script>
+</head>
+<body>
+<main class="auth-page">
+  <form class="auth-card" method="post" action="/login" novalidate>
+    <h1 class="auth-title">Product name</h1>
+    <p class="auth-sub">What it is · sign in to continue</p>
+
+    <!-- <div class="auth-error" role="alert">That username and password don't match.</div> -->
+
+    <input type="hidden" name="next" value="">
+    <div class="field">
+      <label for="username">Username</label>
+      <input id="username" name="username" autocomplete="username" autocapitalize="none" spellcheck="false" required autofocus>
+    </div>
+    <div class="field">
+      <label for="password">Password</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+    </div>
+    <button class="btn btn-glass btn-primary btn-lg" type="submit">Sign in</button>
+
+    <!-- Client slot — only for a client deliverable (references/cobranding.md). -->
+    <div class="auth-client">
+      <span>Proof of concept for</span>
+      <img src="/static/brand/client-logo.svg" alt="Client name">
+    </div>
+    <p class="auth-foot">Your workspace · Sign in securely</p>
+  </form>
+</main>
+</body>
+</html>

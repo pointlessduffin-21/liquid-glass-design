@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Liquid Glass · Button playground</title>
+  <link rel="stylesheet" href="liquid-glass.css">
+  <script src="liquid-glass-buttons.js" defer></script>
+  <style>
+    body { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+    main { max-width: 760px; width: 100%; }
+    h1 { font-size: clamp(32px, 6vw, 58px); letter-spacing: -.045em; margin: 12px 0; }
+    .intro { max-width: 520px; color: var(--ink-2); line-height: 1.6; }
+    .playground { margin: 32px 0; padding: 70px 24px; border-radius: 32px; background: radial-gradient(ellipse at 15% 40%, #b2d2f3, transparent 55%), radial-gradient(ellipse at 85% 70%, #d3c4ed, transparent 50%), linear-gradient(120deg, #d4ebdb, #f2edd6); }
+    .buttons { display: flex; flex-wrap: wrap; gap: 24px; justify-content: center; }
+    .btn-glass { padding: 16px 26px; font-size: 15px; }
+    .controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+    #feedback { min-height: 28px; margin-top: 24px; color: var(--ink-2); }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="eyebrow">Material playground</div>
+    <h1>Glass you can feel.</h1>
+    <p class="intro">Hold a button and move gently. The surface stretches toward your finger, light follows your touch, and the glass settles when you let go. A drag never triggers the action.</p>
+    <section class="playground" aria-label="Interactive glass buttons">
+      <div class="buttons">
+        <button class="btn btn-glass" type="button" id="clear">Clear glass</button>
+        <button class="btn btn-primary btn-glass" type="button" id="tinted">Tinted glass</button>
+        <button class="btn btn-glass" type="button" disabled>Unavailable</button>
+      </div>
+    </section>
+    <div class="controls">
+      <label><input type="checkbox" id="opaque"> Opaque surfaces</label>
+      <span>Keyboard: Tab, then Enter or Space.</span>
+    </div>
+    <p id="feedback" role="status" aria-live="polite">Try a tap, then a hold and drag.</p>
+  </main>
+  <script src="demo-buttons.js" defer></script>
+</body>
+</html>
