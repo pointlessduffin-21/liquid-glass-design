@@ -38,6 +38,8 @@
     if (!(el instanceof HTMLElement)) throw new TypeError('Motion target must be an HTML element.');
     if (!effects[effect]) throw new TypeError('Unknown motion effect.');
     if (duration !== undefined && (!Number.isFinite(duration) || duration < 0)) throw new TypeError('Invalid duration.');
+    const reduced = motionOff();
+    const effectName = reduced ? 'fade' : effect;
     const previous = active.get(el);
     const current = previous ? { opacity: getComputedStyle(el).opacity, transform: getComputedStyle(el).transform } : null;
     const originalWillChange = previous?.originalWillChange ?? el.style.willChange;
@@ -47,10 +49,14 @@
     if (visible) el.inert = false;
     else el.inert = true;
     el.hidden = false;
+    el.dataset.lgMotion = effectName;
     const style = getComputedStyle(el);
     const ms = duration ?? (parseFloat(style.getPropertyValue('--motion-duration')) || 200);
-    const from = current || (visible ? effects[effect] : { opacity: style.opacity, transform: style.transform });
-    const to = visible ? { opacity: 1, transform: 'none' } : effects[effect];
+    const playMs = reduced && ms > 0 ? Math.min(ms, 160) : ms;
+    const chosen = effects[effectName];
+    const from = current || (visible ? { ...chosen } : { opacity: style.opacity, transform: reduced ? 'none' : style.transform });
+    const to = visible ? { opacity: 1, transform: 'none' } : { ...chosen };
+    if (reduced) { from.transform = 'none'; to.transform = 'none'; }
     const finishVisibility = () => {
       if (!visible && focusInside) {
         if (focusTarget instanceof HTMLElement && focusTarget.isConnected) focusTarget.focus();
@@ -59,15 +65,15 @@
       el.hidden = !visible;
       if (visible) el.inert = false;
     };
-    if (motionOff() || !el.animate || ms === 0 || document.hidden) {
+    if (!el.animate || playMs === 0 || document.hidden) {
       active.delete(el);
       el.style.willChange = originalWillChange;
       finishVisibility();
       return { cancelled: false };
     }
-    el.style.willChange = 'transform, opacity';
+    el.style.willChange = reduced ? 'opacity' : 'transform, opacity';
     const animation = el.animate([from, to], {
-      duration: ms,
+      duration: playMs,
       easing: visible ? 'cubic-bezier(.2,.8,.2,1)' : 'cubic-bezier(.4,0,1,1)',
       fill: 'both',
     });
@@ -97,14 +103,42 @@
       return new Promise((resolve) => setTimeout(resolve, delay)).then(() => transition(el, visible, options));
     }));
   }
+  function feedback(el) {
+    if (!(el instanceof HTMLElement) || !el.animate || document.hidden) return;
+    el.animate([{ opacity: 0.55 }, { opacity: 1 }], {
+      duration: motionOff() ? 120 : 180,
+      easing: 'cubic-bezier(.2,.8,.2,1)',
+    });
+  }
+  function reveal(elements, options = {}) {
+    return stagger(elements, true, { effect: 'fade', ...options });
+  }
   preference.addEventListener('change', applyMotionPreference);
   document.addEventListener('visibilitychange', () => { if (document.hidden) finishAll(); });
+  document.addEventListener('click', (event) => {
+    const link = event.target.closest?.('a[data-lg-transition]');
+    if (!link || link.target || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || event.button !== 0) return;
+    const url = new URL(link.href, location.href);
+    if (url.origin !== location.origin) return;
+    event.preventDefault();
+    const reduced = motionOff();
+    const animation = document.body.animate(
+      reduced
+        ? [{ opacity: 1 }, { opacity: 0 }]
+        : [{ opacity: 1, transform: 'none' }, { opacity: 0, transform: 'translateY(8px)' }],
+      { duration: reduced ? 140 : 200, easing: 'cubic-bezier(.4,0,1,1)', fill: 'forwards' }
+    );
+    animation.finished.finally(() => { location.href = link.href; });
+  });
   applyMotionPreference();
   applyEffectsPreference();
+  document.documentElement.classList.add('lg-motion');
   window.LiquidGlass = Object.assign(window.LiquidGlass || {}, {
     show: (el, options) => transition(el, true, options),
     hide: (el, options) => transition(el, false, options),
     stagger: (elements, options) => stagger(elements, true, options),
+    reveal,
+    feedback,
     setMotion(value) {
       writeStored(MOTION_KEY, value === 'reduced' ? 'reduced' : 'system');
       return applyMotionPreference();

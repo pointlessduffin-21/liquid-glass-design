@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<!--
+  Hero banner. The Three.js field is decoration behind one opaque panel.
+  Copy kit/liquid-glass-scene.js with this page. Operational numbers do not go on the canvas.
+-->
+<html lang="en" class="lg-motion">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#eef3ee">
+  <title>Welcome · Product name</title>
+  <link rel="stylesheet" href="/static/liquid-glass.css">
+  <script src="/static/liquid-glass-motion.js" defer></script>
+  <script src="/static/liquid-glass-scene.js" defer></script>
+</head>
+<body class="has-scene">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <div class="lg-scene" data-lg-scene="hero" data-lg-scene-mode="background"></div>
+  <main class="hero-shell" id="main">
+    <section class="hero-panel data-well">
+      <div class="eyebrow">Product name</div>
+      <h1>A calm place to see the work.</h1>
+      <p>The moving field is decoration. Readings, sign-in, and commands stay on this opaque panel.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="template-login.html" data-lg-transition>Sign in</a>
+        <a class="btn" href="template-app.html" data-lg-transition>Open the monitor</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

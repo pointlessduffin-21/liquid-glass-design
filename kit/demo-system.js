@@ -20,6 +20,7 @@ const phase = byId('command-phase');
 function paintCommand() {
   phase.textContent = LiquidGlass.commandLabel(command);
   byId('command-submit').disabled = command.phase === 'submitting' || command.phase === 'accepted' || command.phase === 'unknown';
+  LiquidGlass.feedback(phase);
 }
 byId('command-submit').addEventListener('click', () => {
   phase.textContent = 'Requesting';

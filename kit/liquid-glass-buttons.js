@@ -37,7 +37,7 @@
     active = { el, id: event.pointerId, rect: el.getBoundingClientRect(),
       startX: event.clientX, startY: event.clientY,
       x: event.clientX, y: event.clientY };
-    if (!motionReduced()) el.classList.add('glass-held');
+    el.classList.add('glass-held');
     paint();
   });
   document.addEventListener('pointermove', event => {

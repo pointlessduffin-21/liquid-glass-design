@@ -8,6 +8,34 @@ description: Build and restyle web apps, dashboards, admin panels, and WebGL ove
 Light, calm and professional: frosted white surfaces over a soft green field,
 with product-neutral templates and configurable brand accents.
 
+## Motion is non-negotiable
+
+Every page or component built with this skill includes motion. A page shipped
+without animation does not follow the skill.
+
+Required on every screen:
+
+- Entrance and reveal for the page and its sections.
+- A transition when state changes (dialog, disclosure, status, step).
+- Hover and press feedback. Change opacity or color. Do not move the control.
+- A page or section transition between views.
+- The Three.js field on hero and sign-in pages.
+
+Put `class="lg-motion"` on `<html>`. The stylesheet then reveals `.page-head`,
+`.card`, `.kpi`, `.auth-card`, `.hero-panel`, `.empty`, and `[data-lg-reveal]`.
+Use `LiquidGlass.show`, `hide`, `reveal`, and `feedback` for state changes.
+Put `data-lg-transition` on links that leave the page. Copy
+`liquid-glass-motion.js` with the page.
+
+Hero and sign-in pages also copy `liquid-glass-scene.js` and include
+`<div class="lg-scene" data-lg-scene="hero"></div>` (or `signin`). The canvas
+is decoration behind an opaque panel. It is not a place for numbers or commands.
+
+`prefers-reduced-motion: reduce` removes translation, scale, tilt, camera
+travel, springs, and decorative pulses. It keeps short opacity and color fades
+(at most 160 ms). Do not strip all feedback. An in-app Reduce motion setting
+can only strengthen the operating-system preference.
+
 ## Authoritative guidelines
 
 Read `references/liquid-glass-design-guidelines.md` before building or
@@ -49,7 +77,9 @@ static folder and build on them.
 | `liquid-glass.js` | Sidebar collapse (remembered), server status dot from a health URL, 401 → sign-in redirect. No dependencies |
 | `liquid-glass-buttons.js` | Opt-in `.btn-glass` hold/drag surface feedback; movement over 8 px cancels activation, reduced-motion support |
 | `liquid-glass-theme.js` | Custom background/accent colors with derived tints and primary-label contrast |
-| `liquid-glass-motion.js` | Interruptible pop/fade/slide show/hide APIs, responsive glass navigation, and reduced-motion / reduced-effects preferences. The OS reduced-motion preference cannot be overridden. |
+| `liquid-glass-motion.js` | Required. Interruptible pop/fade/slide show/hide, `reveal`, `feedback`, page-leave fades, and responsive glass navigation. Reduced motion keeps opacity fades. The OS preference cannot be overridden. |
+| `liquid-glass-scene.js` | Required on hero and sign-in pages. Bundled Three.js field: frosted panes, DPR cap, pause, reduced-motion still frame, WebGL fallback. Rebuild with `npm run build:scene`. |
+| `template-hero.html` | Hero banner with the scene behind one opaque panel |
 | `liquid-glass-ops.js` | Truthful command phases, pressure parsing, identifier normalization, reading freshness, and determinate progress |
 | `demo-system.html` | Theme, glass menu, animation, and mobile playground |
 | `demo-buttons.html` | Standalone clear/tinted button playground |
@@ -126,9 +156,11 @@ When the scene is embedded in an app page:
 
 Use `references/themes-and-motion.md` when adding custom backgrounds/accents,
 glass menu bars, entrances/exits, or mobile navigation. Animate wrappers using
-transform/opacity; reserve blur for small static material layers. Target 60 fps
-and profile on representative devices, with `.glass-lite` and `.glass-opaque`
-fallbacks. Honor reduced motion and preserve keyboard focus on exit.
+transform and opacity; under reduced motion use opacity only. Reserve blur for
+small static material layers. Target 60 fps and profile on representative
+devices, with `.glass-lite` and `.glass-opaque` fallbacks. Preserve keyboard
+focus on exit. A screen with no entrance, no state transition, and no press
+feedback is unfinished.
 
 ## Read next
 

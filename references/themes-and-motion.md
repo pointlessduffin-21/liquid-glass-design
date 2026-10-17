@@ -107,10 +107,18 @@ LiquidGlass.setEffects('reduced'); // or 'full'
 `localStorage` under `liquid-glass.pref.motion`. Passing any other value
 stores `system`. If the OS asks for reduced motion, the document stays
 `data-motion="reduced"` anyway. `setEffects` sets `data-effects` to `reduced`
-or `full` and removes backdrop blur when reduced. The API honors reduced
-motion, missing animation APIs, and hidden browser tabs with immediate
-visibility changes. Preference changes finish in-flight effects rather than
-leaving half-visible content.
+or `full` and removes backdrop blur when reduced. Reduced motion keeps a short opacity fade and drops translation, scale, and
+stagger delay. Missing animation APIs and hidden tabs change visibility
+immediately. Preference changes finish in-flight effects rather than leaving
+half-visible content. `LiquidGlass.reveal(elements)` staggers a fade.
+`LiquidGlass.feedback(element)` pulses opacity for a status change. A link
+with `data-lg-transition` fades the page out before navigating.
+
+Hero and sign-in pages load `liquid-glass-scene.js` and a
+`<div class="lg-scene" data-lg-scene="hero">` host. The scene fades in, pauses
+offscreen and in a hidden tab, renders one still frame under reduced motion,
+and replaces itself with text if WebGL fails. Rebuild the bundle with
+`npm run build:scene` after editing `kit/src/liquid-glass-scene.mjs`.
 
 ## Rendering cost and mobile behavior
 

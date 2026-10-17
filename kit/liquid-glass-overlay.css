@@ -232,11 +232,11 @@ html { scroll-padding-top: 5rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { transition: none !important; animation: none !important; }
+  .panel, .ctl, .toast { transition-property: opacity, background-color, color, border-color; }
 }
-html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after {
-  transition: none !important; animation: none !important;
-}
+html[data-motion="reduced"] .panel,
+html[data-motion="reduced"] .ctl,
+html[data-motion="reduced"] .toast { transition-property: opacity, background-color, color, border-color; }
 html[data-effects="reduced"] .panel { background: var(--well); }
 @media (forced-colors: active) {
   .panel, .data-well, .toast, .ctl { background: Canvas; color: CanvasText; border: 1px solid CanvasText; box-shadow: none; }

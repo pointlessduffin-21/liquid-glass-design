@@ -91,14 +91,27 @@ assert.equal(ops.formatProgress(0, 0).label, 'No checks required');
 assert.equal(ops.formatProgress(9, 5).value, 5);
 
 const htmlFiles = [
-  'kit/template-app.html', 'kit/template-login.html', 'kit/demo-system.html', 'kit/demo-buttons.html',
+  'kit/template-app.html', 'kit/template-login.html', 'kit/template-hero.html', 'kit/demo-system.html', 'kit/demo-buttons.html',
 ];
 for (const file of htmlFiles) {
   const html = fs.readFileSync(path.join(root, file), 'utf8');
   assert.doesNotMatch(html, /tabindex\s*=\s*["'][1-9]/i, file);
   assert.doesNotMatch(html, /<button(?![^>]*\btype=)/i, file);
 }
-assert.match(fs.readFileSync(path.join(root, 'SKILL.md'), 'utf8'), /liquid-glass-design-guidelines\.md/);
-assert.match(fs.readFileSync(path.join(root, 'references/liquid-glass-design-guidelines.md'), 'utf8'), /31-principle/);
+const skill = fs.readFileSync(path.join(root, 'SKILL.md'), 'utf8');
+const guide = fs.readFileSync(path.join(root, 'references/liquid-glass-design-guidelines.md'), 'utf8');
+const checklist = fs.readFileSync(path.join(root, 'references/checklist.md'), 'utf8');
+assert.match(skill, /liquid-glass-design-guidelines\.md/);
+assert.match(skill, /non-negotiable/i);
+assert.match(guide, /31-principle/);
+assert.match(guide, /Mandatory motion/);
+assert.match(checklist, /does not follow the skill/);
+assert.match(css, /@keyframes lg-fade/);
+assert.match(css, /@keyframes lg-enter/);
+assert.doesNotMatch(cssCode, /\*\s*,\s*\*::before[\s\S]{0,80}animation:\s*none\s*!important/);
+assert.match(fs.readFileSync(path.join(root, 'kit/template-login.html'), 'utf8'), /data-lg-scene/);
+assert.match(fs.readFileSync(path.join(root, 'kit/template-hero.html'), 'utf8'), /data-lg-scene/);
+assert.match(fs.readFileSync(path.join(root, 'kit/src/liquid-glass-scene.mjs'), 'utf8'), /prefers-reduced-motion/);
+assert.match(fs.readFileSync(path.join(root, 'kit/liquid-glass-motion.js'), 'utf8'), /LiquidGlass\.feedback|feedback,/);
 
 console.log('Guideline unit and static checks passed.');

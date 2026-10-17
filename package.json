@@ -4,8 +4,13 @@
   "private": true,
   "description": "Browser verification for the dependency-free Liquid Glass kit",
     "scripts": {
+      "build:scene": "esbuild kit/src/liquid-glass-scene.mjs --bundle --format=iife --global-name=LiquidGlassScene --outfile=kit/liquid-glass-scene.js --minify --legal-comments=none --banner:js=\"/* Liquid Glass scene. Includes Three.js, MIT. */\"",
       "test:guidelines": "node scripts/check-guidelines.cjs",
       "test:browser": "node scripts/check-browser.cjs"
     },
-  "devDependencies": { "playwright": "^1.58.2" }
+  "devDependencies": {
+    "esbuild": "^0.28.2",
+    "playwright": "^1.58.2",
+    "three": "^0.186.1"
+  }
 }

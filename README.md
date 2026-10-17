@@ -95,8 +95,9 @@ bars use `.glass-menubar` and collapse into a mobile disclosure navigation.
 See [the full API and markup guide](references/themes-and-motion.md) and open
 [the theme and motion playground](kit/demo-system.html).
 
-Animations prioritize transform and opacity, clean up resources, and honor
-reduced motion. Use `.glass-lite` for lower rendering cost or `.glass-opaque`
+Motion is required on every page: an entrance, a state transition, and press
+feedback. Reduced motion keeps a short opacity fade and drops spatial movement.
+Hero and sign-in pages add `liquid-glass-scene.js`. Use `.glass-lite` for lower rendering cost or `.glass-opaque`
 for opaque surfaces. The kit targets 60 fps; actual frame rate depends on the
 device, composited content, and concurrent rendering work.
 

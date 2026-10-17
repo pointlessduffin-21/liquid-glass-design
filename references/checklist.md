@@ -22,6 +22,17 @@ defect in the TMS.
       `*-grid` / `*-row`).
 - [ ] Number columns are right-aligned (`.num` on `th` **and** `td`).
 
+## Motion
+
+Motion is non-negotiable. A page shipped without animation does not follow the skill.
+
+- [ ] The page has an entrance or reveal (`.lg-motion` on `<html>`, or `data-lg-reveal` / `LiquidGlass.reveal`).
+- [ ] State changes animate: dialogs, disclosures, status text, and steps use `LiquidGlass.show`, `hide`, or `feedback`.
+- [ ] Buttons and links show hover and press feedback with opacity or color. The control box does not move.
+- [ ] Navigation between pages uses `data-lg-transition` or an equivalent section transition.
+- [ ] Hero and sign-in pages mount `liquid-glass-scene.js`. The form or reading sits on an opaque panel with no backdrop blur. Pause, a still frame for reduced motion, and a WebGL fallback are present.
+- [ ] `prefers-reduced-motion` and `data-motion="reduced"` remove translation, scale, tilt, camera travel, and pulses. They keep a short opacity or color fade. An in-app motion setting cannot override an OS request to reduce motion.
+
 ## Behaviour
 
 - [ ] Every original element `id`, `name`, `data-*`, API call and JS flow
@@ -46,7 +57,7 @@ defect in the TMS.
       `aria-pressed` / `aria-selected` on toggles and tabs; `aria-expanded`
       on collapsibles.
 - [ ] `prefers-reduced-transparency`, `.glass-opaque`, and `data-effects="reduced"` give opaque panels.
-      `prefers-reduced-motion` and `data-motion="reduced"` stop pulses and transitions. An in-app motion setting cannot override an OS request to reduce motion.
+      `prefers-reduced-motion` and `data-motion="reduced"` stop pulses, translation, and scale, and keep short opacity fades. An in-app motion setting cannot override an OS request to reduce motion.
 - [ ] Readings, tables, alarms, and confirmation reviews sit on an opaque `.data-well` or equivalent. Do not stack backdrop blur. Navigation plus one outer shell is the operations budget.
 - [ ] Command UI distinguishes requesting, accepted, unknown, verified, and failed. Transport acceptance is not physical verification. Unknown outcomes name the request id.
 - [ ] Progress text matches completed required checks. Unknown totals use an indeterminate state, not a fake percentage.

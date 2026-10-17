@@ -2,6 +2,24 @@
 
 > Reconstructed from scratch from the user's complete list of 31 principles. This is a new engineering guide, not a recovered original. Version 1.0 • 17 October 2026 • Audience: Claude Code, Codex, implementers, and reviewers.
 
+## Mandatory motion (repository rule)
+
+Motion is non-negotiable for every page and component built with this skill. A page shipped without animation does not follow the skill.
+
+Every screen includes all of these:
+
+1. An entrance or reveal for the page and its sections.
+2. A transition when state changes (a panel, dialog, status, or step).
+3. Hover and press feedback on controls, using opacity or color. The control's box does not move.
+4. A page or section transition when moving between views.
+5. The bundled Three.js field on hero and sign-in pages (`kit/liquid-glass-scene.js`). Operational readings stay on an opaque well in front of that field.
+
+`prefers-reduced-motion: reduce`, and an in-app Reduce motion choice, remove spatial and vestibular motion: translation, scale, tilt, camera travel, springs, and decorative pulses. They do not remove feedback. Under reduced motion, use a short opacity or color fade (at most 160 ms). An in-app setting cannot turn motion back on when the operating system asked to reduce it.
+
+Drop-in support lives in `kit/liquid-glass.css` (`.lg-motion` entrances, button opacity) and `kit/liquid-glass-motion.js` (`LiquidGlass.show`, `hide`, `reveal`, `feedback`, and `a[data-lg-transition]`). Put `class="lg-motion"` on `<html>`. Mark extra regions with `data-lg-reveal`.
+
+This rule amends §5 where that section would otherwise strip every transition. Category (c) decorative travel stops. Category (b) informative changes remain as fades.
+
 ## Navigation
 
 1. [Status, scope, and agent usage](#1-status-scope-and-how-an-agent-must-use-this-guide)
@@ -728,6 +746,8 @@ As a user-experience target, collect field **LCP ≤2.5s, INP ≤200ms, CLS ≤0
 Read `prefers-reduced-motion` at startup and react to changes. Offer an in-app Reduce motion setting that can strengthen the OS preference; do not silently override an OS request to reduce motion. Provide a separate Reduce visual effects setting for resource use and readability. Persist only permissible preferences. Forced colors and opaque fallback must retain focus, controls, and status meaning.
 
 Never flash alarms or use strobing as a safety cue. Provide pause controls for optional background playback; a paused telemetry presentation prominently says Paused and shows the last update time. Continue receiving and surfacing critical operational events under the application's safety requirements; do not silently freeze all alarms when pausing a chart. Include static and text alternatives for demonstrations. Reduced motion means an intentional usable state, not a 0.001ms animation that still launches the GPU pipeline.
+
+The repository motion rule above is mandatory: reduced motion switches informative transitions to opacity and color fades. It does not delete hover, press, reveal, or state feedback.
 
 ## 6. React / TypeScript / CSS / Three.js implementation patterns
 

@@ -531,10 +531,10 @@ body.fit-viewport .app-main > .container {
     font: 600 14px/1 var(--font);
     text-decoration: none; white-space: nowrap;
     cursor: pointer;
-    transition: background var(--motion-micro) var(--ease-state), border-color var(--motion-micro) var(--ease-state), box-shadow var(--motion-micro) var(--ease-state), color var(--motion-micro) var(--ease-state);
+    transition: background var(--motion-micro) var(--ease-state), border-color var(--motion-micro) var(--ease-state), box-shadow var(--motion-micro) var(--ease-state), color var(--motion-micro) var(--ease-state), opacity var(--motion-micro) var(--ease-state);
 }
 .btn:hover { border-color: var(--accent-line); box-shadow: inset 0 1px 0 #fff, 0 3px 10px rgba(15, 79, 52, .10); }
-.btn:active { background: #fff; }
+.btn:active { background: #fff; opacity: .88; }
 .btn:disabled, .btn[aria-disabled="true"] { opacity: .5; cursor: not-allowed; }
 .btn .ic { width: 15px; height: 15px; }
 
@@ -773,13 +773,46 @@ body .modal-overlay {
         backdrop-filter: none;
     }
 }
+@keyframes lg-enter {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: none; }
+}
+@keyframes lg-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+html.lg-motion :is(.page-head, .card, .kpi, .auth-card, .hero-panel, .empty, [data-lg-reveal]) {
+    animation: lg-enter var(--motion-duration) var(--ease) both;
+}
+html.lg-motion .kpi-grid > .kpi:nth-child(2) { animation-delay: 30ms; }
+html.lg-motion .kpi-grid > .kpi:nth-child(3) { animation-delay: 60ms; }
+html.lg-motion .kpi-grid > .kpi:nth-child(4) { animation-delay: 90ms; }
+html.lg-motion .kpi-grid > .kpi:nth-child(n + 5) { animation-delay: 120ms; }
+html.lg-motion .stack > :nth-child(2) { animation-delay: 40ms; }
+html.lg-motion .stack > :nth-child(3) { animation-delay: 80ms; }
+html.lg-motion .stack > :nth-child(n + 4) { animation-delay: 120ms; }
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
-    *, *::before, *::after { animation: none !important; transition: none !important; }
+    .dot-live::after, .skeleton::after { animation: none !important; }
+    #app-sidebar, .app-main { transition-property: none; }
+    html.lg-motion :is(.page-head, .card, .kpi, .auth-card, .hero-panel, .empty, [data-lg-reveal]) {
+        animation-name: lg-fade;
+        animation-duration: var(--motion-micro);
+        animation-delay: 0s !important;
+        transform: none;
+    }
 }
 html[data-motion="reduced"] { scroll-behavior: auto; }
-html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after {
-    animation: none !important; transition: none !important;
+html[data-motion="reduced"] .dot-live::after,
+html[data-motion="reduced"] .skeleton::after { animation: none !important; }
+html[data-motion="reduced"] #app-sidebar,
+html[data-motion="reduced"] .app-main { transition-property: none; }
+html[data-motion="reduced"].lg-motion :is(.page-head, .card, .kpi, .auth-card, .hero-panel, .empty, [data-lg-reveal]),
+html.lg-motion[data-motion="reduced"] :is(.page-head, .card, .kpi, .auth-card, .hero-panel, .empty, [data-lg-reveal]) {
+    animation-name: lg-fade;
+    animation-duration: var(--motion-micro);
+    animation-delay: 0s !important;
+    transform: none;
 }
 html[data-effects="reduced"] :is(.glass, .card, .kpi, #app-sidebar, .modal, .toast, .auth-card, .glass-menubar, .data-well) {
     background: #fbfdfb;
@@ -873,9 +906,10 @@ html[data-effects="reduced"] :is(.glass, .card, .kpi, #app-sidebar, .modal, .toa
     .btn-glass.btn-primary::before { background: var(--brand-green); }
 }
 @media (prefers-reduced-motion: reduce) {
-    .btn.btn-glass, .btn-glass::before, .btn-glass::after { transition: none; }
+    .btn.btn-glass, .btn-glass::before { transform: none; }
+    .btn-glass::after { transition-property: opacity; }
 }
-html[data-motion="reduced"] .btn-glass::after { transition: none; }
+html[data-motion="reduced"] .btn-glass::after { transition-property: opacity; }
 @media (forced-colors: active) {
     .btn-glass { border: 1px solid ButtonText; color: ButtonText; background: ButtonFace; }
     .btn-glass::before, .btn-glass::after { display: none; }
@@ -950,3 +984,41 @@ html[data-effects="reduced"] .skeleton::after, html[data-effects="reduced"] .dot
     }
     .btn-icon, .sb-collapse, .sb-user-actions a, .sb-user-actions button { width: 48px; height: 48px; }
 }
+
+/* Decorative Three.js field. The canvas is never the reading or command surface. */
+.has-scene { isolation: isolate; }
+.lg-scene, .lg-scene-inline {
+    position: fixed; inset: 0; z-index: 0; overflow: hidden; pointer-events: none;
+    background: var(--bg);
+}
+.lg-scene canvas, .lg-scene-inline canvas {
+    display: block; width: 100%; height: 100%;
+    animation: lg-fade var(--motion-decor) var(--ease) both;
+}
+.lg-scene-controls {
+    position: fixed; z-index: 5;
+    top: max(12px, env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right));
+    display: flex; flex-direction: column; align-items: flex-end; gap: 8px;
+    max-width: min(22rem, calc(100vw - 24px));
+}
+.lg-scene-note {
+    margin: 0; padding: 8px 12px; border-radius: var(--r-sm);
+    border: 1px solid var(--hairline); background: var(--well); color: var(--ink-2);
+}
+.has-scene .auth-page, .hero-shell { position: relative; z-index: 1; }
+.has-scene .auth-card, .hero-panel {
+    background: var(--well); backdrop-filter: none; -webkit-backdrop-filter: none;
+}
+.hero-shell {
+    min-height: 100svh; display: grid; align-items: end;
+    padding: max(72px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(40px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+}
+.hero-panel { width: min(40rem, 100%); padding: 28px; }
+.hero-panel h1 { margin: 0 0 8px; font-size: clamp(2rem, 5vw, 3.4rem); letter-spacing: -.04em; }
+.hero-panel p { margin: 0 0 18px; color: var(--ink-2); }
+.hero-actions { display: flex; flex-wrap: wrap; gap: 10px; }
+@media (prefers-reduced-motion: reduce) {
+    .lg-scene canvas, .lg-scene-inline canvas { animation-duration: var(--motion-micro); }
+}
+html[data-motion="reduced"] .lg-scene canvas,
+html[data-motion="reduced"] .lg-scene-inline canvas { animation-duration: var(--motion-micro); }

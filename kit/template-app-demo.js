@@ -12,7 +12,10 @@ trigger?.addEventListener('click', () => {
 });
 document.getElementById('refresh')?.addEventListener('click', () => {
   const status = document.getElementById('refresh-status');
-  if (status) status.textContent = 'Refresh requested. This starter has no live feed, so the table is unchanged.';
+  if (status) {
+    status.textContent = 'Refresh requested. This starter has no live feed, so the table is unchanged.';
+    LiquidGlass.feedback(status);
+  }
 });
 const progress = document.getElementById('check-progress');
 const meter = document.getElementById('check-meter');

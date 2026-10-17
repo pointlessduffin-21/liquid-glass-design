@@ -60,10 +60,13 @@ const fs = require('node:fs');
   const toggle=page.locator('[data-glass-menu]'), nav=page.locator('#demo-navigation');
   await page.waitForFunction(()=>document.querySelector('#demo-navigation').hidden);
   await toggle.click(); assert.equal(await toggle.getAttribute('aria-expanded'),'true');
-  await nav.locator('a').first().focus(); await page.keyboard.press('Escape');
-  assert.equal(await nav.evaluate(el=>el.hidden),true); assert.equal(await toggle.evaluate(el=>el===document.activeElement),true);
-  await toggle.click(); await page.locator('h1').click(); assert.equal(await nav.evaluate(el=>el.hidden),true);
-  await toggle.click(); await nav.locator('a').last().click(); assert.equal(await nav.evaluate(el=>el.hidden),true);
+  await nav.locator('a').first().focus();   await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelector('#demo-navigation').hidden);
+  assert.equal(await toggle.evaluate(el=>el===document.activeElement),true);
+  await toggle.click(); await page.locator('h1').click();
+  await page.waitForFunction(() => document.querySelector('#demo-navigation').hidden);
+  await toggle.click(); await nav.locator('a').last().click();
+  await page.waitForFunction(() => document.querySelector('#demo-navigation').hidden);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   await page.setViewportSize({width:1440,height:1000}); await page.waitForFunction(()=>!document.querySelector('#demo-navigation').hidden);
   await page.emulateMedia({reducedMotion:'no-preference'});
@@ -122,12 +125,33 @@ const fs = require('node:fs');
   assert.match(await page.locator('#command-phase').textContent(), /Verified/);
   await page.emulateMedia({ reducedMotion: 'reduce' });
   assert.equal(await page.evaluate(() => LiquidGlass.setMotion('full')), 'reduced');
-  await page.evaluate(() => LiquidGlass.show(document.querySelector('#sample')));
-  assert.equal(await page.locator('#sample').evaluate(el => el.getAnimations().length), 0);
+  const reducedShow = await page.evaluate(async () => {
+    const el = document.querySelector('#sample');
+    const pending = LiquidGlass.show(el, { effect: 'pop', duration: 400 });
+    const animation = el.getAnimations()[0];
+    const frames = animation ? animation.effect.getKeyframes() : [];
+    await pending;
+    return {
+      mode: el.dataset.lgMotion,
+      transforms: frames.map((frame) => String(frame.transform || 'none')),
+      remaining: el.getAnimations().length,
+    };
+  });
+  assert.equal(reducedShow.mode, 'fade');
+  assert.ok(reducedShow.transforms.length >= 2, JSON.stringify(reducedShow));
+  assert.ok(reducedShow.transforms.every((value) => value === 'none' || value === 'matrix(1, 0, 0, 1, 0, 0)'), JSON.stringify(reducedShow.transforms));
+  assert.equal(reducedShow.remaining, 0);
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.evaluate(() => LiquidGlass.setMotion('reduced'));
-  await page.evaluate(() => LiquidGlass.hide(document.querySelector('#sample')));
-  assert.equal(await page.locator('#sample').evaluate(el => el.getAnimations().length), 0);
+  const reducedHide = await page.evaluate(async () => {
+    const el = document.querySelector('#sample');
+    const pending = LiquidGlass.hide(el, { effect: 'slide', duration: 400 });
+    const mode = el.dataset.lgMotion;
+    await pending;
+    return { mode, hidden: el.hidden };
+  });
+  assert.equal(reducedHide.mode, 'fade');
+  assert.equal(reducedHide.hidden, true);
   await page.evaluate(() => LiquidGlass.setMotion('system'));
   await page.evaluate(() => LiquidGlass.setEffects('reduced'));
   assert.equal(await page.locator('.glass-menubar').evaluate(el => getComputedStyle(el).backdropFilter), 'none');
@@ -144,12 +168,12 @@ const fs = require('node:fs');
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.locator('#open-dialog').click();
   await page.waitForFunction(() => document.querySelector('#item-dialog').open);
-  assert.equal(await page.locator('#item-dialog').evaluate(el => el.getAnimations().length), 0);
+  assert.equal(await page.locator('#item-dialog').getAttribute('data-lg-motion'), 'fade');
   await page.keyboard.press('Escape');
   await page.waitForFunction(() => !document.querySelector('#item-dialog').open);
   assert.equal(await page.evaluate(() => document.activeElement.id), 'open-dialog');
   await page.emulateMedia({ reducedMotion: 'no-preference' });
-  for (const file of ['demo-system.html', 'demo-buttons.html', 'template-app.html', 'template-login.html']) {
+  for (const file of ['demo-system.html', 'demo-buttons.html', 'template-app.html', 'template-login.html', 'template-hero.html']) {
     await go(file);
     for (const width of [320, 390]) {
       await page.setViewportSize({ width, height: 800 });
@@ -167,6 +191,39 @@ const fs = require('node:fs');
   await page.keyboard.press('Tab');
   await page.screenshot({ path: `artifacts/${engine}-template-phone-focus.png`, fullPage: false });
   await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const file of ['template-login.html', 'template-hero.html']) {
+    await go(file);
+    await page.waitForFunction(() => {
+      const host = document.querySelector('[data-lg-scene]');
+      return host && ['playing', 'still', 'fallback'].includes(host.dataset.sceneState);
+    });
+    const card = file.includes('login') ? '.auth-card' : '.hero-panel';
+    assert.equal(await page.locator(card).evaluate((el) => getComputedStyle(el).backdropFilter), 'none', file);
+    const state = await page.locator('[data-lg-scene]').getAttribute('data-scene-state');
+    if (state !== 'fallback') {
+      const box = await page.locator('[data-lg-scene] canvas').boundingBox();
+      assert.ok(box && box.width > 200 && box.height > 200, `${file} ${JSON.stringify(box)}`);
+    }
+    if (file.includes('hero') && state === 'playing') {
+      await page.locator('.lg-scene-pause').click();
+      assert.match(await page.locator('.lg-scene-note').innerText(), /Background paused/);
+      await page.locator('.lg-scene-pause').click();
+      await page.waitForFunction(() => document.querySelector('.lg-scene-note').hidden);
+      assert.equal(await page.locator('[data-lg-scene]').getAttribute('data-scene-state'), 'playing');
+    }
+    const entrance = await page.locator(card).evaluate((el) => getComputedStyle(el).animationName);
+    assert.ok(entrance === 'lg-enter' || entrance === 'lg-fade', entrance);
+  }
+  await page.screenshot({ path: `artifacts/${engine}-hero-desktop.png`, fullPage: false });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await go('template-hero.html');
+  await page.waitForFunction(() => ['still', 'fallback'].includes(document.querySelector('[data-lg-scene]').dataset.sceneState));
+  const reducedEntrance = await page.locator('.hero-panel').evaluate((el) => getComputedStyle(el).animationName);
+  assert.equal(reducedEntrance, 'lg-fade');
+  await page.screenshot({ path: `artifacts/${engine}-hero-reduced.png`, fullPage: false });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 390, height: 844 });
   await go('template-login.html');
   await page.screenshot({ path: `artifacts/${engine}-login-phone.png`, fullPage: true });
   await go('demo-buttons.html');
