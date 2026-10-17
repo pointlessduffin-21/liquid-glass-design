@@ -9,6 +9,36 @@ function updateTheme() {
 }
 for (const id of ['accent', 'background', 'field']) byId(id).addEventListener('input', updateTheme);
 for (const id of ['opaque', 'lite']) byId(id).addEventListener('change', () => document.body.classList.toggle(`glass-${id}`, byId(id).checked));
+byId('reduce-motion').addEventListener('change', () => {
+  LiquidGlass.setMotion(byId('reduce-motion').checked ? 'reduced' : 'system');
+});
+byId('reduce-effects').addEventListener('change', () => {
+  LiquidGlass.setEffects(byId('reduce-effects').checked ? 'reduced' : 'full');
+});
+let command = { phase: 'idle' };
+const phase = byId('command-phase');
+function paintCommand() {
+  phase.textContent = LiquidGlass.commandLabel(command);
+  byId('command-submit').disabled = command.phase === 'submitting' || command.phase === 'accepted' || command.phase === 'unknown';
+  LiquidGlass.feedback(phase);
+}
+byId('command-submit').addEventListener('click', () => {
+  phase.textContent = 'Requesting';
+  command = LiquidGlass.commandReducer(command, { type: 'submit', requestId: 'r1', assetId: 'ST-05' });
+  paintCommand();
+});
+byId('command-accept').addEventListener('click', () => {
+  command = LiquidGlass.commandReducer(command, { type: 'accepted', requestId: 'r1' });
+  paintCommand();
+});
+byId('command-timeout').addEventListener('click', () => {
+  command = LiquidGlass.commandReducer(command, { type: 'timeout', requestId: 'r1' });
+  paintCommand();
+});
+byId('command-verify').addEventListener('click', () => {
+  command = LiquidGlass.commandReducer(command, { type: 'verified', requestId: 'r1', verifiedAt: '2026-10-17T11:05:00Z' });
+  paintCommand();
+});
 const sample = byId('sample');
 let request = 0;
 for (const action of ['show', 'hide', 'replay']) {

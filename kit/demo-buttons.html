@@ -1,11 +1,12 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" class="lg-motion">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Liquid Glass · Button playground</title>
   <link rel="stylesheet" href="liquid-glass.css">
   <script src="liquid-glass-buttons.js" defer></script>
+  <script src="liquid-glass-motion.js" defer></script>
   <style>
     body { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
     main { max-width: 760px; width: 100%; }
@@ -19,10 +20,10 @@
   </style>
 </head>
 <body>
-  <main>
+  <main data-lg-reveal>
     <div class="eyebrow">Material playground</div>
     <h1>Glass you can feel.</h1>
-    <p class="intro">Hold a button and move gently. The surface stretches toward your finger, light follows your touch, and the glass settles when you let go. A drag never triggers the action.</p>
+    <p class="intro">Hold a button and the highlight follows your finger. The control stays where it is, so the hit target does not move. A drag past 8 px never triggers the action.</p>
     <section class="playground" aria-label="Interactive glass buttons">
       <div class="buttons">
         <button class="btn btn-glass" type="button" id="clear">Clear glass</button>

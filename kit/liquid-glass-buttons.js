@@ -4,6 +4,7 @@
  */
 (() => {
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const motionReduced = () => reduced.matches || document.documentElement.dataset.motion === 'reduced';
   const blocked = new WeakSet();
   let active = null;
   let frame = 0;
@@ -12,18 +13,12 @@
   const paint = () => {
     frame = 0;
     if (!active) return;
-    const { el, rect, x, y, startX, startY } = active;
+    const { el, rect, x, y } = active;
     if (!el.isConnected || disabled(el)) { reset(); return; }
-    if (reduced.matches) return;
-    const dx = clamp(x - startX, 64);
-    const dy = clamp(y - startY, 48);
+    if (motionReduced()) return;
+    // Highlight only. The button box stays put so the hit target does not move.
     el.style.setProperty('--glass-x', `${clamp(x - rect.left, rect.width)}px`);
     el.style.setProperty('--glass-y', `${clamp(y - rect.top, rect.height)}px`);
-    el.style.setProperty('--glass-dx', `${dx * .14}px`);
-    el.style.setProperty('--glass-dy', `${dy * .14}px`);
-    el.style.setProperty('--glass-stretch', String(1 + Math.abs(dx) / 1600));
-    el.style.setProperty('--glass-squash', String(1 - Math.abs(dx) / 3200));
-    el.style.setProperty('--glass-tilt', `${dx / 48}deg`);
   };
   function reset() {
     cancelAnimationFrame(frame);
@@ -31,10 +26,6 @@
     if (!active) return;
     const el = active.el;
     el.classList.remove('glass-held');
-    // Keep the highlight position for the release fade; settle the shape.
-    for (const key of ['dx', 'dy', 'stretch', 'squash', 'tilt']) {
-      el.style.removeProperty(`--glass-${key}`);
-    }
     active = null;
   }
   document.addEventListener('pointerdown', event => {
@@ -46,7 +37,7 @@
     active = { el, id: event.pointerId, rect: el.getBoundingClientRect(),
       startX: event.clientX, startY: event.clientY,
       x: event.clientX, y: event.clientY };
-    if (!reduced.matches) el.classList.add('glass-held');
+    el.classList.add('glass-held');
     paint();
   });
   document.addEventListener('pointermove', event => {
@@ -82,4 +73,5 @@
   document.addEventListener('scroll', reset, { passive: true, capture: true });
   document.addEventListener('visibilitychange', () => { if (document.hidden) reset(); });
   reduced.addEventListener('change', reset);
+  new MutationObserver(reset).observe(document.documentElement, { attributes: true, attributeFilter: ['data-motion'] });
 })();

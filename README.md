@@ -53,6 +53,8 @@ For a checked-in team installation, copy `SKILL.md`, `kit/`, and `references/` i
 Copy `kit/` into your application's static assets directory. The starters assume these assets are served at `/static/`; change URLs for your framework. Import `liquid-glass.css` once, then load `liquid-glass.js` with `defer`. Use `liquid-glass-overlay.css` for a live canvas/WebGL HUD. The HTML templates expect app routes and backend authentication; they are not a complete server.
 
 - [Skill instructions](SKILL.md): layout, typography, tokens, and integration workflow.
+- [UI/UX guidelines](references/liquid-glass-design-guidelines.md): authoritative 31-principle engineering guide (v1.0, 17 October 2026). Agents follow this when it conflicts with other docs.
+- [Implementation status](references/implementation-status.md): which principles are in the kit, and which stay documentation.
 - [Components](references/components.md): available classes.
 - [Ship checklist](references/checklist.md): responsive and accessibility checks.
 - [Dynamic Island and motion plan](references/dynamic-island-plan.md): proposed integration stages and acceptance criteria.
@@ -63,9 +65,9 @@ Use `<button class="btn btn-glass" type="button">Continue</button>` and load
 `liquid-glass-buttons.js` with `defer` after the stylesheet. Add `btn-primary`
 for tinted glass. The starters already include the script and opt in their buttons.
 
-Holding and moving bends the surface toward the pointer, tracks a highlight, and
-settles on release. Movement beyond 8 px suppresses activation; a normal tap or
-keyboard activation keeps native behavior. Vertical touch scrolling stays enabled.
+Holding tracks a highlight across the control. The hit target stays still.
+Movement beyond 8 px suppresses activation; a normal tap or keyboard activation
+keeps native behavior. Vertical touch scrolling stays enabled.
 Disabled controls stay inactive. Reduced motion removes deformation; add
 `glass-opaque` to a parent for opaque surfaces. These are browser approximations,
 not physical refraction or Apple's native material renderer. Use clear buttons
@@ -93,8 +95,9 @@ bars use `.glass-menubar` and collapse into a mobile disclosure navigation.
 See [the full API and markup guide](references/themes-and-motion.md) and open
 [the theme and motion playground](kit/demo-system.html).
 
-Animations prioritize transform and opacity, clean up resources, and honor
-reduced motion. Use `.glass-lite` for lower rendering cost or `.glass-opaque`
+Motion is required on every page: an entrance, a state transition, and press
+feedback. Reduced motion keeps a short opacity fade and drops spatial movement.
+Hero and sign-in pages add `liquid-glass-scene.js`. Use `.glass-lite` for lower rendering cost or `.glass-opaque`
 for opaque surfaces. The kit targets 60 fps; actual frame rate depends on the
 device, composited content, and concurrent rendering work.
 
@@ -104,11 +107,15 @@ The kit has no runtime npm dependencies. To run development checks:
 
 ```sh
 npm ci
+npm run test:guidelines
 npx playwright install chromium firefox webkit
 npm run test:browser
 BROWSER=firefox npm run test:browser
 BROWSER=webkit npm run test:browser
 ```
+
+`test:guidelines` checks the command reducer, pressure parser, reading freshness,
+progress text, token contrast, and static guards. It does not need a browser.
 
 For an installed Google Chrome, use `CHROME_CHANNEL=chrome npm run test:browser`.
 Checks cover themes, interrupted animations, focus, reduced motion, menu

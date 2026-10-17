@@ -4,9 +4,26 @@ const trigger = document.getElementById('open-dialog');
 let closing = false;
 trigger?.addEventListener('click', () => {
   if (!dialog || dialog.open || closing) return;
+  dialog.inert = false;
   dialog.showModal();
+  const title = document.getElementById('dlg-title');
+  if (title) title.focus();
   LiquidGlass.show(dialog, { effect: 'pop' });
 });
+document.getElementById('refresh')?.addEventListener('click', () => {
+  const status = document.getElementById('refresh-status');
+  if (status) {
+    status.textContent = 'Refresh requested. This starter has no live feed, so the table is unchanged.';
+    LiquidGlass.feedback(status);
+  }
+});
+const progress = document.getElementById('check-progress');
+const meter = document.getElementById('check-meter');
+if (progress && window.LiquidGlass.formatProgress) {
+  const state = LiquidGlass.formatProgress(3, 5);
+  progress.textContent = state.label;
+  if (meter && state.determinate) { meter.max = state.max; meter.value = state.value; }
+}
 async function closeDialog(value = '') {
   if (closing || !dialog?.open) return;
   closing = true;

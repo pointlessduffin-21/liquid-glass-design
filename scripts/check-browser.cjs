@@ -60,10 +60,13 @@ const fs = require('node:fs');
   const toggle=page.locator('[data-glass-menu]'), nav=page.locator('#demo-navigation');
   await page.waitForFunction(()=>document.querySelector('#demo-navigation').hidden);
   await toggle.click(); assert.equal(await toggle.getAttribute('aria-expanded'),'true');
-  await nav.locator('a').first().focus(); await page.keyboard.press('Escape');
-  assert.equal(await nav.evaluate(el=>el.hidden),true); assert.equal(await toggle.evaluate(el=>el===document.activeElement),true);
-  await toggle.click(); await page.locator('h1').click(); assert.equal(await nav.evaluate(el=>el.hidden),true);
-  await toggle.click(); await nav.locator('a').last().click(); assert.equal(await nav.evaluate(el=>el.hidden),true);
+  await nav.locator('a').first().focus();   await page.keyboard.press('Escape');
+  await page.waitForFunction(() => document.querySelector('#demo-navigation').hidden);
+  assert.equal(await toggle.evaluate(el=>el===document.activeElement),true);
+  await toggle.click(); await page.locator('h1').click();
+  await page.waitForFunction(() => document.querySelector('#demo-navigation').hidden);
+  await toggle.click(); await nav.locator('a').last().click();
+  await page.waitForFunction(() => document.querySelector('#demo-navigation').hidden);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   await page.setViewportSize({width:1440,height:1000}); await page.waitForFunction(()=>!document.querySelector('#demo-navigation').hidden);
   await page.emulateMedia({reducedMotion:'no-preference'});
@@ -105,6 +108,126 @@ const fs = require('node:fs');
   await page.locator('#item-dialog button[value=cancel]').click();
   await page.waitForFunction(()=>!document.querySelector('#item-dialog').open);
   assert.equal(await page.evaluate(()=>document.activeElement.id),'open-dialog');
+  await go('demo-system.html');
+  await page.evaluate(() => { localStorage.clear(); return LiquidGlass.setMotion('system'); });
+  await page.locator('#command-submit').click();
+  await page.waitForFunction(() => document.querySelector('#command-phase').textContent === 'Requesting');
+  await page.locator('#command-accept').click();
+  assert.match(await page.locator('#command-phase').textContent(), /Verification pending/);
+  await page.locator('#command-timeout').click();
+  assert.match(await page.locator('#command-phase').textContent(), /Unknown outcome/);
+  const late = await page.evaluate(() => {
+    const current = { phase: 'unknown', requestId: 'r1', assetId: 'ST-05' };
+    return LiquidGlass.commandReducer(current, { type: 'accepted', requestId: 'r1' }).phase;
+  });
+  assert.equal(late, 'unknown');
+  await page.locator('#command-verify').click();
+  assert.match(await page.locator('#command-phase').textContent(), /Verified/);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  assert.equal(await page.evaluate(() => LiquidGlass.setMotion('full')), 'reduced');
+  const reducedShow = await page.evaluate(async () => {
+    const el = document.querySelector('#sample');
+    const pending = LiquidGlass.show(el, { effect: 'pop', duration: 400 });
+    const animation = el.getAnimations()[0];
+    const frames = animation ? animation.effect.getKeyframes() : [];
+    await pending;
+    return {
+      mode: el.dataset.lgMotion,
+      transforms: frames.map((frame) => String(frame.transform || 'none')),
+      remaining: el.getAnimations().length,
+    };
+  });
+  assert.equal(reducedShow.mode, 'fade');
+  assert.ok(reducedShow.transforms.length >= 2, JSON.stringify(reducedShow));
+  assert.ok(reducedShow.transforms.every((value) => value === 'none' || value === 'matrix(1, 0, 0, 1, 0, 0)'), JSON.stringify(reducedShow.transforms));
+  assert.equal(reducedShow.remaining, 0);
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.evaluate(() => LiquidGlass.setMotion('reduced'));
+  const reducedHide = await page.evaluate(async () => {
+    const el = document.querySelector('#sample');
+    const pending = LiquidGlass.hide(el, { effect: 'slide', duration: 400 });
+    const mode = el.dataset.lgMotion;
+    await pending;
+    return { mode, hidden: el.hidden };
+  });
+  assert.equal(reducedHide.mode, 'fade');
+  assert.equal(reducedHide.hidden, true);
+  await page.evaluate(() => LiquidGlass.setMotion('system'));
+  await page.evaluate(() => LiquidGlass.setEffects('reduced'));
+  assert.equal(await page.locator('.glass-menubar').evaluate(el => getComputedStyle(el).backdropFilter), 'none');
+  await page.evaluate(() => { localStorage.clear(); LiquidGlass.setEffects('full'); LiquidGlass.setMotion('system'); });
+  await go('template-app.html');
+  await page.keyboard.press('Tab');
+  assert.equal(await page.evaluate(() => document.activeElement.classList.contains('skip-link')), true);
+  const skipOutline = await page.evaluate(() => getComputedStyle(document.activeElement).outlineWidth);
+  assert.ok(parseFloat(skipOutline) >= 3, skipOutline);
+  const target = await page.locator('#open-dialog').boundingBox();
+  assert.ok(target.width >= 44 && target.height >= 44, JSON.stringify(target));
+  assert.equal((await page.locator('#reading-status').textContent()).trim(), 'Stale');
+  assert.match(await page.locator('#check-progress').textContent(), /3 of 5 required checks complete/);
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.locator('#open-dialog').click();
+  await page.waitForFunction(() => document.querySelector('#item-dialog').open);
+  assert.equal(await page.locator('#item-dialog').getAttribute('data-lg-motion'), 'fade');
+  await page.keyboard.press('Escape');
+  await page.waitForFunction(() => !document.querySelector('#item-dialog').open);
+  assert.equal(await page.evaluate(() => document.activeElement.id), 'open-dialog');
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  for (const file of ['demo-system.html', 'demo-buttons.html', 'template-app.html', 'template-login.html', 'template-hero.html']) {
+    await go(file);
+    for (const width of [320, 390]) {
+      await page.setViewportSize({ width, height: 800 });
+      const overflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 1);
+      assert.equal(overflow, false, `${file} at ${width}`);
+    }
+  }
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await go('template-app.html');
+  await page.screenshot({ path: `artifacts/${engine}-template-desktop.png`, fullPage: true });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.screenshot({ path: `artifacts/${engine}-template-phone.png`, fullPage: true });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.screenshot({ path: `artifacts/${engine}-template-reduced-motion.png`, fullPage: true });
+  await page.keyboard.press('Tab');
+  await page.screenshot({ path: `artifacts/${engine}-template-phone-focus.png`, fullPage: false });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  for (const file of ['template-login.html', 'template-hero.html']) {
+    await go(file);
+    await page.waitForFunction(() => {
+      const host = document.querySelector('[data-lg-scene]');
+      return host && ['playing', 'still', 'fallback'].includes(host.dataset.sceneState);
+    });
+    const card = file.includes('login') ? '.auth-card' : '.hero-panel';
+    assert.equal(await page.locator(card).evaluate((el) => getComputedStyle(el).backdropFilter), 'none', file);
+    const state = await page.locator('[data-lg-scene]').getAttribute('data-scene-state');
+    if (state !== 'fallback') {
+      const box = await page.locator('[data-lg-scene] canvas').boundingBox();
+      assert.ok(box && box.width > 200 && box.height > 200, `${file} ${JSON.stringify(box)}`);
+    }
+    if (file.includes('hero') && state === 'playing') {
+      await page.locator('.lg-scene-pause').click();
+      assert.match(await page.locator('.lg-scene-note').innerText(), /Background paused/);
+      await page.locator('.lg-scene-pause').click();
+      await page.waitForFunction(() => document.querySelector('.lg-scene-note').hidden);
+      assert.equal(await page.locator('[data-lg-scene]').getAttribute('data-scene-state'), 'playing');
+    }
+    const entrance = await page.locator(card).evaluate((el) => getComputedStyle(el).animationName);
+    assert.ok(entrance === 'lg-enter' || entrance === 'lg-fade', entrance);
+  }
+  await page.screenshot({ path: `artifacts/${engine}-hero-desktop.png`, fullPage: false });
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await go('template-hero.html');
+  await page.waitForFunction(() => ['still', 'fallback'].includes(document.querySelector('[data-lg-scene]').dataset.sceneState));
+  const reducedEntrance = await page.locator('.hero-panel').evaluate((el) => getComputedStyle(el).animationName);
+  assert.equal(reducedEntrance, 'lg-fade');
+  await page.screenshot({ path: `artifacts/${engine}-hero-reduced.png`, fullPage: false });
+  await page.emulateMedia({ reducedMotion: 'no-preference' });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await go('template-login.html');
+  await page.screenshot({ path: `artifacts/${engine}-login-phone.png`, fullPage: true });
+  await go('demo-buttons.html');
+  await page.screenshot({ path: `artifacts/${engine}-buttons-phone.png`, fullPage: true });
   // Actual touchscreen taps on a mobile context (WebKit covers the mobile engine).
   if (engine !== 'firefox') {
     const mobile = await browser.newContext({viewport:{width:390,height:844},hasTouch:true,isMobile:true});

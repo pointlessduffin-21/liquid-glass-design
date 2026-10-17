@@ -5,8 +5,8 @@ defect in the TMS.
 
 ## Visual
 
-- [ ] Screenshot at **1440×900** and **390×844**, and look at both.
-- [ ] No horizontal page scroll at 390 px:
+- [ ] Screenshot at **1440×900**, **390×844**, and **320×** height, including a reduced-motion pass, and look at them.
+- [ ] No horizontal page scroll at 320 or 390 px:
       `document.documentElement.scrollWidth > innerWidth` is false. Wide
       tables scroll inside `.table-wrap`.
 - [ ] No leftover dark theme: grep the page for `#0f1117`, `#1a1d27`,
@@ -21,6 +21,17 @@ defect in the TMS.
 - [ ] Side-by-side cards don't get stacking margins (they shouldn't, inside
       `*-grid` / `*-row`).
 - [ ] Number columns are right-aligned (`.num` on `th` **and** `td`).
+
+## Motion
+
+Motion is non-negotiable. A page shipped without animation does not follow the skill.
+
+- [ ] The page has an entrance or reveal (`.lg-motion` on `<html>`, or `data-lg-reveal` / `LiquidGlass.reveal`).
+- [ ] State changes animate: dialogs, disclosures, status text, and steps use `LiquidGlass.show`, `hide`, or `feedback`.
+- [ ] Buttons and links show hover and press feedback with opacity or color. The control box does not move.
+- [ ] Navigation between pages uses `data-lg-transition` or an equivalent section transition.
+- [ ] Hero and sign-in pages mount `liquid-glass-scene.js`. The form or reading sits on an opaque panel with no backdrop blur. Pause, a still frame for reduced motion, and a WebGL fallback are present.
+- [ ] `prefers-reduced-motion` and `data-motion="reduced"` remove translation, scale, tilt, camera travel, and pulses. They keep a short opacity or color fade. An in-app motion setting cannot override an OS request to reduce motion.
 
 ## Behaviour
 
@@ -41,12 +52,16 @@ defect in the TMS.
 
 - [ ] Skip link first; a real `<nav>`; `aria-current="page"` on the active
       item.
-- [ ] A visible focus ring (green); tap targets ≥ 44 px on phones.
+- [ ] A visible 3 px focus ring; standalone targets ≥ 44 px (48 px for coarse pointers). The whole ring stays visible, including inside clipped shells.
 - [ ] `role="status"` for things that change; `role="alert"` for errors;
       `aria-pressed` / `aria-selected` on toggles and tabs; `aria-expanded`
       on collapsibles.
-- [ ] `prefers-reduced-transparency` gives opaque panels;
-      `prefers-reduced-motion` stops pulses and transitions (both built in).
+- [ ] `prefers-reduced-transparency`, `.glass-opaque`, and `data-effects="reduced"` give opaque panels.
+      `prefers-reduced-motion` and `data-motion="reduced"` stop pulses, translation, and scale, and keep short opacity fades. An in-app motion setting cannot override an OS request to reduce motion.
+- [ ] Readings, tables, alarms, and confirmation reviews sit on an opaque `.data-well` or equivalent. Do not stack backdrop blur. Navigation plus one outer shell is the operations budget.
+- [ ] Command UI distinguishes requesting, accepted, unknown, verified, and failed. Transport acceptance is not physical verification. Unknown outcomes name the request id.
+- [ ] Progress text matches completed required checks. Unknown totals use an indeterminate state, not a fake percentage.
+- [ ] Run `npm run test:guidelines` and `npm run test:browser`.
 - [ ] Form inputs ≥ 16 px on phones.
 
 ## Over a 3D scene
