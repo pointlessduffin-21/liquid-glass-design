@@ -8,6 +8,7 @@
   <script src="liquid-glass-theme.js" defer></script>
   <script src="liquid-glass-motion.js" defer></script>
   <script src="liquid-glass-buttons.js" defer></script>
+  <script src="liquid-glass-ops.js" defer></script>
   <script src="demo-system.js" defer></script>
   <style>
     main { max-width: 1080px; margin: 64px auto; padding: 0 24px 48px; }
@@ -34,6 +35,7 @@
       <a href="#home" aria-current="page">Overview</a>
       <a href="#customize">Customize</a>
       <a href="#motion">Motion</a>
+      <a href="#operations">Operations</a>
     </nav>
   </header>
   <main id="home">
@@ -51,6 +53,8 @@
           <label><input id="field" type="checkbox" checked> Soft background field</label>
           <label><input id="opaque" type="checkbox"> Opaque surfaces</label>
           <label><input id="lite" type="checkbox"> Low-cost rendering (no blur)</label>
+          <label><input id="reduce-motion" type="checkbox"> Reduce motion</label>
+          <label><input id="reduce-effects" type="checkbox"> Reduce visual effects</label>
           <div class="field"><label for="effect">Transition</label><select id="effect"><option value="pop">Pop in / out</option><option value="fade">Fade in / out</option><option value="slide">Slide in / out</option></select></div>
         </div>
         <p class="theme-summary" id="theme-status" role="status">Default green theme</p>
@@ -66,6 +70,20 @@
         <p class="theme-summary" id="motion-status" role="status">Try a transition.</p>
       </section>
     </div>
+    <section class="card" style="padding:24px; margin-top:24px" id="operations" aria-labelledby="ops-title">
+      <h2 class="card-title" id="ops-title">Command state</h2>
+      <p class="page-sub">Local feedback says Requesting. Verification stays pending until a server event with the same request id.</p>
+      <div class="data-well">
+        <p>Asset <span class="id">ST-05</span></p>
+        <p id="command-phase" role="status">Idle</p>
+        <div class="actions">
+          <button class="btn btn-primary" id="command-submit" type="button">Submit inspection</button>
+          <button class="btn" id="command-accept" type="button">Transport accepted</button>
+          <button class="btn" id="command-timeout" type="button">Simulate timeout</button>
+          <button class="btn" id="command-verify" type="button">Reconcile verified</button>
+        </div>
+      </div>
+    </section>
   </main>
 </body>
 </html>

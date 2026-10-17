@@ -21,6 +21,7 @@
   <script src="/static/liquid-glass-buttons.js" defer></script>
   <script src="/static/liquid-glass-theme.js" defer></script>
   <script src="/static/liquid-glass-motion.js" defer></script>
+  <script src="/static/liquid-glass-ops.js" defer></script>
 </head>
 <body data-health-url="/healthz" data-login-url="/login">
   <a class="skip-link" href="#main">Skip to content</a>
@@ -98,20 +99,30 @@
           <p class="page-sub">One sentence: what this page is for and who uses it.</p>
         </div>
         <div class="page-actions">
-          <select class="select" aria-label="Station" style="width:auto">
+          <select class="select" aria-label="Station" id="station-filter" style="width:auto">
             <option>All stations</option>
+            <option>ST-05</option>
           </select>
-          <button class="btn btn-glass" type="button">Refresh</button>
-          <button class="btn btn-glass btn-primary" type="button" id="open-dialog">New item</button>
+          <button class="btn" type="button" id="refresh">Refresh</button>
+          <p class="hint" id="refresh-status" role="status"></p>
+          <details class="more-actions">
+            <summary>More actions</summary>
+            <div class="more-actions-panel">
+              <button class="btn" type="button">Export current filtered rows</button>
+              <button class="btn" type="button" disabled aria-describedby="ack-reason">Acknowledge</button>
+              <p class="hint disabled-reason" id="ack-reason">Acknowledge is unavailable because no anomaly is selected.</p>
+            </div>
+          </details>
+          <button class="btn btn-primary" type="button" id="open-dialog">New item</button>
         </div>
       </header>
 
       <div class="stack">
         <section class="kpi-grid" aria-label="Summary">
-          <div class="kpi"><div class="kpi-label">Active cameras</div><div class="kpi-value">6</div><div class="kpi-note">Streaming now</div></div>
-          <div class="kpi"><div class="kpi-label">Cycles completed</div><div class="kpi-value">25,635</div><div class="kpi-note">Total recorded</div></div>
+          <div class="kpi"><div class="kpi-label">Active cameras</div><div class="kpi-value">6</div><div class="kpi-note">6 of 6 stations streaming</div></div>
+          <div class="kpi"><div class="kpi-label">Cycles completed</div><div class="kpi-value">25,635</div><div class="kpi-note">All recorded cycles</div></div>
           <div class="kpi"><div class="kpi-label">Average cycle</div><div class="kpi-value">47.0<small>s</small></div><div class="kpi-note">Across all cycles</div></div>
-          <div class="kpi kpi-bad"><div class="kpi-label">Open anomalies</div><div class="kpi-value">2</div><div class="kpi-note">Need review</div></div>
+          <div class="kpi kpi-bad"><div class="kpi-label">Open anomalies</div><div class="kpi-value">2</div><div class="kpi-note">2 of 6 stations need review</div></div>
         </section>
 
         <section class="card card-pad-0" aria-labelledby="recent-title">
@@ -124,32 +135,57 @@
           </div>
           <div class="table-wrap">
             <table class="table">
-              <thead><tr><th>#</th><th>Station</th><th class="num">Cycle time</th><th>Status</th><th>Started</th></tr></thead>
+              <caption>Recent cycles. Times include the unit and are not truncated.</caption>
+              <thead><tr><th scope="col">#</th><th scope="col">Station</th><th scope="col" class="num">Cycle time</th><th scope="col">Status</th><th scope="col">Started</th></tr></thead>
               <tbody>
-                <tr><td>255</td><td>ST-05</td><td class="num">40.7 s</td><td><span class="badge badge-ok"><span class="dot dot-ok"></span>Normal</span></td><td>5:59 PM</td></tr>
-                <tr><td>254</td><td>ST-05</td><td class="num">61.2 s</td><td><span class="badge badge-warn"><span class="dot dot-warn"></span>Struggled</span></td><td>5:59 PM</td></tr>
+                <tr><td>255</td><td class="id">ST-05</td><td class="num">40.7 s</td><td><span class="badge badge-ok"><span class="dot dot-ok" aria-hidden="true"></span>Normal</span></td><td><time datetime="2026-10-17T17:59:00">5:59 PM</time></td></tr>
+                <tr><td>254</td><td class="id">ST-05</td><td class="num">61.2 s</td><td><span class="badge badge-warn"><span class="dot dot-warn" aria-hidden="true"></span>Struggled</span></td><td><time datetime="2026-10-17T17:59:00">5:59 PM</time></td></tr>
               </tbody>
             </table>
           </div>
+          <div class="data-well" style="margin:16px">
+            <p class="draft-status" role="status">Draft saved at 14:32. Production configuration unchanged.</p>
+            <h3 class="card-title" id="station-title">Station ST-05</h3>
+            <dl class="reading-list">
+              <div>
+                <dt>Cycle time</dt>
+                <dd class="reading" id="cycle-reading">40.7 s</dd>
+              </div>
+              <div>
+                <dt>Data status</dt>
+                <dd id="reading-status">Stale</dd>
+              </div>
+              <div>
+                <dt>Source time</dt>
+                <dd><time datetime="2026-10-17T17:59:00Z" id="reading-time">17:59 UTC</time></dd>
+              </div>
+            </dl>
+            <div class="progress-block">
+              <p id="check-progress">3 of 5 required checks complete</p>
+              <progress id="check-meter" max="5" value="3" aria-label="Required checks">3 of 5</progress>
+            </div>
+          </div>
         </section>
 
-        <section class="card">
+        <section class="data-well" aria-label="Anomalies">
           <div class="empty"><strong>No anomalies</strong>Nothing matches these filters. New ones appear here as they are raised.</div>
         </section>
       </div>
     </div>
   </main>
 
-  <dialog class="modal" id="item-dialog" aria-labelledby="dlg-title"
+  <dialog class="modal" id="item-dialog" aria-labelledby="dlg-title" aria-describedby="dlg-consequence"
           style="width:min(460px, calc(100vw - 32px)); padding:22px">
     <form method="dialog">
-      <h2 class="card-title" id="dlg-title" style="font-size:17px;margin-bottom:14px">New item</h2>
-      <div class="field"><label for="f-name">Name</label><input id="f-name" autocomplete="off"></div>
+      <h2 class="card-title" id="dlg-title" tabindex="-1">Review new item</h2>
+      <p id="dlg-consequence" class="page-sub">Saving adds a station record in this workspace. It does not change equipment or clear anomalies.</p>
+      <div class="field"><label for="f-name">Name</label><input id="f-name" name="name" autocomplete="off" required>
+        <p class="hint" id="f-name-hint">Required. Letters, numbers, and spaces.</p></div>
       <div class="field"><label for="f-role">Role</label>
-        <select id="f-role"><option>Viewer</option><option>Supervisor</option><option>Admin</option></select></div>
+        <select id="f-role" name="role"><option>Viewer</option><option>Supervisor</option><option>Admin</option></select></div>
       <div class="row" style="justify-content:flex-end;margin-top:20px">
-        <button class="btn btn-glass" value="cancel">Cancel</button>
-        <button class="btn btn-glass btn-primary" value="save">Save</button>
+        <button class="btn" type="submit" value="cancel" formnovalidate>Cancel review</button>
+        <button class="btn btn-primary" type="submit" value="save">Save item</button>
       </div>
     </form>
   </dialog>

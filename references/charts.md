@@ -26,7 +26,7 @@ Three-way splits (zones, left / centre / right) use the tokens:
 ## Chart.js defaults
 
 ```js
-const INK_3 = '#6b7c72', GRID = 'rgba(16,36,26,.08)';
+const INK_3 = '#4a5c54', GRID = 'rgba(16,36,26,.08)';
 Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
 Chart.defaults.color = INK_3;
 const axisX = { grid: { display: false }, border: { color: 'rgba(16,36,26,.18)' },
@@ -47,6 +47,11 @@ const tooltip = { backgroundColor: 'rgba(255,255,255,.96)', titleColor: '#10241a
 - **Every chart has an empty state** (`.empty` inside the card) instead of
   blank axes.
 - **Tables stay the source of truth.** A chart summarises; the numbers are
-  available beside or below it.
+  available beside or below it, with units, the time window, the source, and
+  a legend. Missing samples are a gap plus a "Missing data" label. Do not
+  draw a connecting line across an outage or tween an uncertain value into
+  extra samples.
+- **A percentage names its denominator and window.** Equivalent success and
+  failure views have to reconcile.
 - **Doughnuts only for parts of a whole** with ≤ 4 parts. Put the values in
   the legend (e.g. "Center · 25.9 s").

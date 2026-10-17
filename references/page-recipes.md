@@ -1,7 +1,10 @@
 # Page recipes
 
 Reusable app layouts. Each starts with the page head (see
-components.md) inside `.container`.
+components.md) inside `.container`. Follow
+`liquid-glass-design-guidelines.md` for task structure: global context, then
+the work queue, then evidence, then an explicit action review. These recipes
+keep the existing page types; the guidelines win if a recipe conflicts.
 
 ## Navigation: group by what people come to do
 

@@ -1,8 +1,10 @@
 # Dynamic Island and Liquid Glass motion integration plan
 
-Status: island integration proposed. Interactive button motion now ships in
-`kit/liquid-glass-buttons.js` and `.btn-glass` styles; the reusable theme and pop/fade/slide APIs now ship in
+Status: island integration proposed. Interactive button highlights ship in
+`kit/liquid-glass-buttons.js`. The highlight follows the pointer; the hit
+target does not move. Theme and pop/fade/slide APIs ship in
 `liquid-glass-theme.js` and `liquid-glass-motion.js`. No island runtime ships yet.
+Do not add one that pulses over alarms or chases the cursor with its controls.
 
 ## Intended experience
 

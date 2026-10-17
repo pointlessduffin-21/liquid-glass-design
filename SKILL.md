@@ -8,6 +8,29 @@ description: Build and restyle web apps, dashboards, admin panels, and WebGL ove
 Light, calm and professional: frosted white surfaces over a soft green field,
 with product-neutral templates and configurable brand accents.
 
+## Authoritative guidelines
+
+Read `references/liquid-glass-design-guidelines.md` before building or
+reviewing a screen. It is the authoritative UI/UX design engineering guide
+(v1.0, 17 October 2026): the user's 31 principles, written for implementers
+and reviewers. **MUST** items are release requirements. **SHOULD** items need
+a recorded reason to skip.
+
+Where that guide conflicts with this skill or another reference, the guide
+wins. Keep the kit map, class names, and recipes in this folder when they do
+not conflict. `references/implementation-status.md` records which principles
+are implemented in the kit and which stay documentation because this
+repository has no application backend, chart runtime, or 3D engine.
+
+The guide's dark token sample in pattern P1 is a reference shape, not a
+restyle. This kit stays light. Map its rules onto the classes below: glass
+for navigation and one outer shell, opaque data wells for readings, tables,
+forms, alarms, and confirmation reviews.
+
+Do not manipulate people with dark patterns. Operational safety, truthful
+state, and informed choice outrank engagement and decoration. This UI does
+not replace a certified safety system.
+
 ## When it applies
 
 - The user requests Liquid Glass or this design kit.
@@ -26,7 +49,8 @@ static folder and build on them.
 | `liquid-glass.js` | Sidebar collapse (remembered), server status dot from a health URL, 401 → sign-in redirect. No dependencies |
 | `liquid-glass-buttons.js` | Opt-in `.btn-glass` hold/drag surface feedback; movement over 8 px cancels activation, reduced-motion support |
 | `liquid-glass-theme.js` | Custom background/accent colors with derived tints and primary-label contrast |
-| `liquid-glass-motion.js` | Interruptible pop/fade/slide show/hide APIs and responsive glass navigation |
+| `liquid-glass-motion.js` | Interruptible pop/fade/slide show/hide APIs, responsive glass navigation, and reduced-motion / reduced-effects preferences. The OS reduced-motion preference cannot be overridden. |
+| `liquid-glass-ops.js` | Truthful command phases, pressure parsing, identifier normalization, reading freshness, and determinate progress |
 | `demo-system.html` | Theme, glass menu, animation, and mobile playground |
 | `demo-buttons.html` | Standalone clear/tinted button playground |
 | `template-app.html` | A complete app page in the correct structure |
@@ -40,15 +64,20 @@ class names. Use `LiquidGlass.setTheme` for customization; keep CSS tokens as th
 
 | Token | Value | Role |
 | --- | --- | --- |
-| `--ink` / `--ink-2` / `--ink-3` | `#10241a` / `#3f5248` / `#6b7c72` | Text / body / labels and meta (green-tinted, so text sits in the palette) |
+| `--ink` / `--ink-2` / `--ink-3` | `#10241a` / `#3f5248` / `#4a5c54` | Text / body / labels and meta. Muted text clears 4.5:1 on white |
 | `--brand-deep` `--brand-green` `--brand-mid` `--brand-lime` | `#0f4f34` `#1a6f3a` `#5fae52` `#a8cc4a` | Default brand palette: primary button, active nav, avatar |
 | `--accent` | `#127942` | Links, focus ring, selection, "Actual" |
-| `--ok` `--warn` `--err` `--info` | `#1aa34a` `#c98a12` `#d2453c` `#2f6fb3` | **Status only**, always with a word |
+| `--ok` `--warn` `--err` `--info` | `#188a3c` `#9a6808` `#d2453c` `#2f6fb3` | **Status graphics**, always with a word. Text uses `--ok-ink` `--warn-ink` `--err-ink` `--info-ink` |
 | `--bg` + field | `#eef3ee` + four soft radial greens, fixed | Default background field; customize or disable it |
-| Glass | white 74→54% gradient, `blur(22px) saturate(170%)`, 1px white edge, inset top highlight, soft green shadow | Every surface |
+| Glass | white 74→54% gradient, `blur(22px) saturate(170%)`, 1px white edge, inset top highlight, soft green shadow | Navigation and outer shells. Readings use opaque `--well` (`#f7faf7`) |
 
 Radii are 18 px (cards), 14 (tiles, inputs), 10 (controls) and 999 (buttons,
-badges). Easing is `cubic-bezier(.2,.7,.2,1)`. Surfaces are light; backgrounds and accents are customizable.
+badges). Entry easing is `cubic-bezier(.2,.8,.2,1)`; departures use
+`cubic-bezier(.4,0,1,1)`; state changes use `cubic-bezier(.4,0,.2,1)`.
+Default motion is 200 ms (inspector or disclosure) and decorative motion stays
+within 240 ms. Surfaces are light; backgrounds and accents are customizable.
+Body text is 16 px. Standalone controls are at least 44×44 px, and 48×48 px
+for coarse pointers.
 
 ## Type
 
@@ -112,8 +141,10 @@ fallbacks. Honor reduced motion and preserve keyboard focus on exit.
   and what not to do with them.
 - `references/themes-and-motion.md`: implemented theme API, navigation markup, motion lifecycle, and optimization guidance.
 - `references/dynamic-island-plan.md`: planned activity island and fluid motion integration; these components are not implemented yet.
-- `references/checklist.md`: the pre-ship checks (390 px, roles, MJPEG
-  limits, proxy headers), each from a real defect.
+- `references/liquid-glass-design-guidelines.md`: authoritative 31-principle guide.
+- `references/implementation-status.md`: what the kit implements, and what remains doc-only.
+- `references/checklist.md`: the pre-ship checks (320 and 390 px, roles, MJPEG
+  limits, proxy headers), each from a real defect or a guideline requirement.
 
 ## Restyling an existing app onto it
 

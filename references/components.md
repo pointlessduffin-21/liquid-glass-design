@@ -8,10 +8,10 @@ from the tokens and add it to the kit rather than restyling per page.
 
 | Token | Value | Use |
 | --- | --- | --- |
-| `--ink` / `--ink-2` / `--ink-3` / `--ink-4` | `#10241a` `#3f5248` `#6b7c72` `#98a69d` | Text, body copy, labels/meta, disabled/placeholder |
+| `--ink` / `--ink-2` / `--ink-3` / `--ink-4` | `#10241a` `#3f5248` `#4a5c54` `#546860` | Text, body copy, labels/meta, tertiary text. All clear 4.5:1 on white |
 | `--brand-deep` `--brand-green` `--brand-mid` `--brand-lime` | `#0f4f34` `#1a6f3a` `#5fae52` `#a8cc4a` | Brand: logo greens. Primary button gradient, active nav, avatar |
 | `--accent` | `#127942` | Links, focus ring, selected states, "Actual" badge |
-| `--ok` `--warn` `--err` `--info` (+ `-soft`) | `#1aa34a` `#c98a12` `#d2453c` `#2f6fb3` | **Status only**, always with a word |
+| `--ok` `--warn` `--err` `--info` (+ `-soft`, `-ink`) | `#188a3c` `#9a6808` `#d2453c` `#2f6fb3` | **Status only**, always with a word. Use the `-ink` token for text |
 | `--bg` | `#eef3ee` | Page ground under the green field |
 | `--glass` / `--glass-strong` / `--glass-flat` | white gradients | Panels / sidebar, dialogs, auth card / quiet surfaces |
 | `--glass-blur` | `blur(22px) saturate(170%)` | The frosting (app pages only; never over a live 3D scene) |
@@ -19,7 +19,10 @@ from the tokens and add it to the kit rather than restyling per page.
 | `--shadow` / `--shadow-lift` | inset highlight + soft green shadow | Resting / floating surfaces |
 | `--zone-left/center/right/other` | `#2a78d6` `#127942` `#eb6834` `#98a69d` | Categorical chart series (validated); see charts.md |
 | `--r-lg` 18 · `--r` 14 · `--r-sm` 10 · `--r-pill` 999 | | Cards · tiles/inputs · controls · buttons, badges |
-| `--ease` | `cubic-bezier(.2,.7,.2,1)` | All transitions |
+| `--ease` / `--ease-exit` / `--ease-state` | `cubic-bezier(.2,.8,.2,1)` / `cubic-bezier(.4,0,1,1)` / `cubic-bezier(.4,0,.2,1)` | Arrival, departure, state change |
+| `--motion-micro` / `--motion-duration` / `--motion-decor` | `120ms` / `200ms` / `240ms` | Press feedback, inspector or disclosure, decorative cap |
+| `--well` | `#f7faf7` | Opaque reading, table, form, and review surface |
+| `--space-1` … `--space-7` | `4, 8, 12, 16, 24, 32, 48px` | Spacing scale. Gaps inside a group stay smaller than gaps between groups |
 
 The body paints a fixed, soft green field from four radial gradients. Glass
 reads as glass only over it, so don't give `body` or `.app-main` a flat
@@ -62,7 +65,9 @@ background.
 
 ## Surfaces
 
-- `.card` / `.glass` is the frosted panel (18 px radius, 18 px padding).
+- `.card` / `.glass` is the frosted panel (18 px radius, 18 px padding). Use it for navigation and one outer shell. A card inside a card becomes opaque.
+- `.data-well` is the opaque surface for readings, tables, alarms, and reviews. `.card-solid` is an opaque card.
+- `.workspace` is the list-plus-inspector grid. It stacks below 60 rem.
   - `.card-head` is a flex row containing `.card-title` and `.card-sub`.
   - `.card-pad-0` is for a table or media edge to edge.
   - `.card-flat` is a quieter surface with no shadow.
@@ -81,12 +86,12 @@ something.
 
 ## Buttons
 
-- `.btn` is the default, a white glass pill.
+- `.btn` is the default solid pill, at least 44×44 px (48 px for coarse pointers). Press feedback does not move the hit target.
 - `.btn-primary` is the green gradient, **one per view**.
 - `.btn-danger` is for destructive actions, `.btn-ghost` for tertiary ones.
-- Sizes: `.btn-sm`, `.btn-lg`, and `.btn-icon` (square).
-- Disabled uses the `disabled` attribute or `aria-disabled="true"`.
-- On phones every `.btn` grows to 44 px.
+- Sizes: `.btn-sm` (inline exception, 32 px, still 48 px on coarse pointers), `.btn-lg`, and `.btn-icon` (44 px square).
+- Disabled uses the `disabled` attribute or `aria-disabled="true"`, with a nearby reason.
+- `.more-actions` is a native disclosure for secondary commands. Keep emergency and recovery actions outside it.
 
 ## Fields
 
@@ -96,7 +101,8 @@ something.
 - Focus is a green ring.
 - `:disabled` is visibly flat. Use it for view-only roles rather than hiding
   values.
-- On phones, inputs are 16 px so iOS doesn't zoom.
+- Inputs are 16 px at every width so mobile browsers do not zoom, and at least 44 px tall.
+- Put the error next to its field and point at it with `aria-describedby`.
 
 ## Tables
 
@@ -106,7 +112,7 @@ something.
     <table class="table"> … <th class="num"> … <td class="num"> …
 ```
 
-- Headers are sticky, frosted, mono caps.
+- Headers are sticky and opaque, mono caps, on a protective `.table-wrap`. Wide tables scroll inside that region; the page does not.
 - Rows get a hover tint.
 - Numbers go right-aligned with `.num`, on both `th` and `td`.
 
@@ -131,11 +137,11 @@ groups; the selected item is solid white.
 
 ## Dialogs
 
-- Use a native `<dialog class="modal">` with `showModal()`, styled by
-  `::backdrop`. Give it a width with something like
+- Use a native `<dialog class="modal">` with `showModal()`. The dialog and its backdrop are opaque. Give it a width with something like
   `width: min(460px, calc(100vw - 32px))`.
+- Focus a heading (`tabindex="-1"`) when the review is long. Do not autofocus a destructive confirm button. Escape cancels the review; that is different from canceling a submitted operation.
 - Legacy overlays: `body .modal-overlay` is already z-index 200 (above the
-  sidebar), blurred and tinted.
+  sidebar) and dims the page without a second blur.
 
 ## Feedback
 
@@ -161,12 +167,12 @@ and an optional `.auth-client` slot and `.auth-foot`. See
 ## Interactive glass buttons
 
 Add `.btn-glass` to `.btn` and load `liquid-glass-buttons.js` with `defer`.
-Use `.btn-primary` for tinted glass. Hold and move for bounded surface stretch
-and a pointer highlight; release settles it. The label remains unscaled.
-A drag over 8 px suppresses the click; a fresh tap and keyboard activation work
-normally. Vertical touch scrolling is preserved. `.glass-opaque` on a parent
-disables transparency. Reduced motion removes elastic movement. Avoid nesting
-interactive glass buttons on blurred glass surfaces; use ordinary buttons there.
+Use `.btn-primary` for tinted glass. A hold tracks the highlight only; the
+button box does not move, stretch, or tilt. A drag over 8 px suppresses the
+click; a fresh tap and keyboard activation work normally. Vertical touch
+scrolling is preserved. `.glass-opaque` on a parent disables transparency.
+Reduced motion removes the highlight chase. Avoid nesting interactive glass
+buttons on blurred glass surfaces; use ordinary buttons there.
 See `kit/demo-buttons.html` for a standalone example.
 
 ## Theme, navigation, and motion components

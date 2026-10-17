@@ -88,10 +88,29 @@ semantics or scroll locking: use native `<dialog>` for dialogs, as the starter d
 
 The transition target should be a wrapper without an existing transform. Put
 transformed children, interactive glass buttons, or positioned motion content
-inside it. `--motion-duration: 240ms` is the default; explicit `duration` is in
-milliseconds. The API honors reduced motion, missing animation APIs, and hidden
-browser tabs with immediate visibility changes. Preference changes finish
-in-flight effects rather than leaving half-visible content.
+inside it. `--motion-duration: 200ms` is the default inspector/disclosure
+duration; explicit `duration` is in milliseconds. Arrivals use ease-out
+(`cubic-bezier(.2,.8,.2,1)`); departures use ease-in
+(`cubic-bezier(.4,0,1,1)`). A hide makes the subtree `inert` immediately so it
+stops taking input, then returns focus to `focusTarget`.
+
+`LiquidGlass.stagger(elements, options)` reveals at most the first six items,
+20–35 ms apart, with at most 150 ms of extra delay. Do not stagger alarms,
+data rows, or focusable controls that the task needs immediately.
+
+```js
+LiquidGlass.setMotion('reduced'); // or 'system'
+LiquidGlass.setEffects('reduced'); // or 'full'
+```
+
+`setMotion('reduced')` strengthens the OS preference and is remembered in
+`localStorage` under `liquid-glass.pref.motion`. Passing any other value
+stores `system`. If the OS asks for reduced motion, the document stays
+`data-motion="reduced"` anyway. `setEffects` sets `data-effects` to `reduced`
+or `full` and removes backdrop blur when reduced. The API honors reduced
+motion, missing animation APIs, and hidden browser tabs with immediate
+visibility changes. Preference changes finish in-flight effects rather than
+leaving half-visible content.
 
 ## Rendering cost and mobile behavior
 
@@ -100,7 +119,8 @@ The kit does not guarantee a frame rate across devices. Pop/fade/slide use
 transform and opacity, without per-frame JavaScript or animated layout/blur.
 Loading shimmer and live status rings also animate transform/opacity.
 Button highlights are small repainted areas with pointer writes coalesced to
-one requestAnimationFrame; they stop on release and cancellation.
+one requestAnimationFrame; they stop on release, cancellation, and reduced
+motion. The control's border box does not move.
 
 Use `.glass-lite` on a parent to remove backdrop blur from material surfaces
 and buttons, and stop decorative loading/status animation. `.glass-opaque` additionally makes material surfaces opaque.

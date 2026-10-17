@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "description": "Browser verification for the dependency-free Liquid Glass kit",
-  "scripts": { "test:browser": "node scripts/check-browser.cjs" },
+    "scripts": {
+      "test:guidelines": "node scripts/check-guidelines.cjs",
+      "test:browser": "node scripts/check-browser.cjs"
+    },
   "devDependencies": { "playwright": "^1.58.2" }
 }
